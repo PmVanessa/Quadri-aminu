@@ -65,15 +65,26 @@
 <body class="min-h-screen flex flex-col">
 
   <!-- V2 Update: Locked navigation width to 928px max to match Framer -->
- <!-- NAVIGATION BAR -->
+<!-- NAVIGATION BAR -->
   <nav class="w-full flex items-center justify-between px-6 py-10 max-w-[928px] mx-auto">
     <img src="Q.png" alt="Logo" class="h-8 object-contain" />
     
-    <div class="flex items-center gap-[32px]">
-      <!-- Fixed Toggle: Charcoal background, no border, larger thumb, tight padding -->
-      <div class="w-[50px] h-[28px] bg-[#2E2E2E] rounded-full p-[2px] flex items-center cursor-pointer">
-        <div class="w-[24px] h-[24px] bg-[#0A0A0A] rounded-full shadow-sm"></div>
+    <!-- Right Wrapper locked to exact 240px width and 42px height -->
+    <div class="flex items-center justify-between w-[240px] h-[42px]">
+      
+      <!-- ThemeSwitch locked to 83px by 42px -->
+      <div class="w-[83px] h-[42px] bg-[#1A1A1A] rounded-[100px] p-[3px] flex items-center cursor-pointer">
+        <!-- Inner circle properly scaled to fit the 42px height -->
+        <div class="w-[36px] h-[36px] bg-[#0A0A0A] rounded-full shadow-md"></div>
       </div>
+      
+      <!-- Button matching the 42px height exactly -->
+      <button class="bg-[#F4F4F4] text-black font-medium text-[13px] px-5 h-[42px] rounded-[100px] hover:scale-105 transition-transform duration-300 whitespace-nowrap">
+        Let’s Work Together 🚀
+      </button>
+      
+    </div>
+  </nav>
       
       <!-- Fixed Button: Lighter font weight, proper curved apostrophe, increased vertical padding -->
       <button class="bg-[#F4F4F4] text-black font-medium text-[14px] px-6 py-3 rounded-[100px] hover:scale-105 transition-transform duration-300 whitespace-nowrap">
