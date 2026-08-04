@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quadri Aminu</title>
   
-  <!-- Importing the exact typography matched from your Framer settings -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -19,9 +18,8 @@
       overflow-x: hidden;
       font-family: 'Inter', sans-serif;
     }
-    ::selection { background-color: #D4FF2E; color: black; }
+    ::selection { background-color: #E0F11F; color: black; }
     
-    /* V2 Update: Exact 1:1 Typography properties from Framer */
     .font-massive {
       font-family: 'Big Shoulders Display', sans-serif;
       font-size: 260px;
@@ -30,7 +28,6 @@
       font-weight: 700;
     }
 
-    /* Scaling down gracefully for laptops/mobile so the 260px text doesn't overflow */
     @media (max-width: 1024px) {
       .font-massive { font-size: 140px; }
     }
@@ -38,7 +35,6 @@
       .font-massive { font-size: 100px; }
     }
 
-    /* V2 Update: Exact headshot pill dimensions (176x280) */
     #floating-headshot {
       position: fixed;
       top: 0;
@@ -64,30 +60,16 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
-  <!-- V2 Update: Locked navigation width to 928px max to match Framer -->
-<!-- NAVIGATION BAR -->
-  <nav class="w-full flex items-center justify-between px-6 py-10 max-w-[928px] mx-auto">
+  <!-- NAVIGATION BAR: Locked to 928px width with exact 136px side alignment behavior -->
+  <nav class="w-full flex items-center justify-between px-[36px] md:px-[136px] py-10 max-w-[1200px] mx-auto">
     <img src="Q.png" alt="Logo" class="h-8 object-contain" />
     
-    <!-- Right Wrapper locked to exact 240px width and 42px height -->
     <div class="flex items-center justify-between w-[240px] h-[42px]">
-      
-      <!-- ThemeSwitch locked to 83px by 42px -->
       <div class="w-[83px] h-[42px] bg-[#1A1A1A] rounded-[100px] p-[3px] flex items-center cursor-pointer">
-        <!-- Inner circle properly scaled to fit the 42px height -->
         <div class="w-[36px] h-[36px] bg-[#0A0A0A] rounded-full shadow-md"></div>
       </div>
       
-      <!-- Button matching the 42px height exactly -->
       <button class="bg-[#F4F4F4] text-black font-medium text-[13px] px-5 h-[42px] rounded-[100px] hover:scale-105 transition-transform duration-300 whitespace-nowrap">
-        Let’s Work Together 🚀
-      </button>
-      
-    </div>
-  </nav>
-      
-      <!-- Fixed Button: Lighter font weight, proper curved apostrophe, increased vertical padding -->
-      <button class="bg-[#F4F4F4] text-black font-medium text-[14px] px-6 py-3 rounded-[100px] hover:scale-105 transition-transform duration-300 whitespace-nowrap">
         Let’s Work Together 🚀
       </button>
     </div>
@@ -95,20 +77,18 @@
 
   <!-- HERO SECTION -->
   <section class="relative flex flex-col items-center justify-center flex-grow mt-[80px] px-4">
-    
     <p class="text-[#7A7A7A] uppercase tracking-[0.25em] text-[11px] md:text-[13px] mb-8 font-medium z-10 text-center">
       Meet Quadri — Your Strategic Growth Partner
     </p>
 
-    <!-- The 260px Header -->
-    <h1 id="hover-trigger" class="font-massive text-[#D4FF2E] text-center z-10 cursor-default uppercase">
+    <h1 id="hover-trigger" class="font-massive text-[#E0F11F] text-center z-10 cursor-default uppercase">
       Quadri<br />Aminu
     </h1>
   </section>
 
   <!-- INTRODUCTION SECTION -->
   <section class="flex flex-col items-center mt-24 md:mt-32 px-6 max-w-[850px] mx-auto pb-32">
-    <div class="text-[#D4FF2E] text-3xl mb-10">✦</div>
+    <div class="text-[#E0F11F] text-3xl mb-10">✦</div>
     <p class="text-[#D1D1D1] text-[22px] md:text-[28px] leading-[1.6] text-center font-medium">
       I'm Quadri Aminu, a Product & Delivery Leader blending product strategy, 
       operational clarity, and technical execution to build digital systems that 
@@ -118,7 +98,6 @@
 
   <img id="floating-headshot" src="headshot.png" alt="Quadri">
 
-  <!-- V2 Update: Bug fixes for the floating headshot behavior -->
   <script>
     const img = document.getElementById('floating-headshot');
     const trigger = document.getElementById('hover-trigger');
@@ -127,7 +106,6 @@
     let currentX = 0, currentY = 0;
     let isHovering = false;
 
-    // Track mouse globally so the math always knows where you are
     document.addEventListener('mousemove', (e) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
@@ -135,8 +113,6 @@
 
     trigger.addEventListener('mouseenter', (e) => {
       isHovering = true;
-      
-      // SNAP TO CURSOR: Forces the image to spawn exactly where your mouse entered the text
       currentX = e.clientX;
       currentY = e.clientY;
       mouseX = e.clientX;
@@ -144,17 +120,14 @@
       
       img.style.left = `${currentX}px`;
       img.style.top = `${currentY}px`;
-      
       img.classList.add('visible');
     });
 
-    // STRICT BOUNDARY: The image completely disappears if you leave the text
     trigger.addEventListener('mouseleave', () => {
       isHovering = false;
       img.classList.remove('visible');
     });
 
-    // Smooth spring animation loop
     function animate() {
       if (isHovering) {
         currentX += (mouseX - currentX) * 0.15;
