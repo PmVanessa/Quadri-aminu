@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quadri Aminu</title>
-  
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  
+  <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
   <script src="https://cdn.tailwindcss.com"></script>
-  
+
   <style>
     body {
       background-color: #121212;
@@ -19,13 +19,13 @@
       font-family: 'Inter', sans-serif;
     }
     ::selection { background-color: #E0F11F; color: black; }
-    
+
     .font-massive {
       font-family: 'Big Shoulders Display', sans-serif;
       font-size: 260px;
       line-height: 110%;
       letter-spacing: -0.02em;
-      font-weight: 700;
+      font-weight: 900;
     }
 
     @media (max-width: 1024px) {
@@ -35,42 +35,55 @@
       .font-massive { font-size: 100px; }
     }
 
-    #floating-headshot {
-      position: fixed;
+    /* Wrapper holds both text layers so the mask coordinates line up exactly */
+    #hero-text-wrap {
+      position: relative;
+      display: inline-block;
+    }
+
+    /* Bottom layer: the plain yellow text, always visible */
+    #base-text {
+      color: #E0F11F;
+    }
+
+    /* Top layer: identical text, filled with the photo instead of colour.
+       background-clip: text means the photo can only ever paint inside
+       the letter shapes, never the black background around them. */
+    #photo-text {
+      position: absolute;
       top: 0;
       left: 0;
-      width: 176px; 
-      height: 280px; 
-      border-radius: 200px;
+      width: 100%;
+      color: transparent;
+      background-image: url('headshot.png');
+      background-size: cover;
+      background-position: center;
+      -webkit-background-clip: text;
+      background-clip: text;
       pointer-events: none;
-      object-fit: cover;
-      object-position: center; 
-      z-index: 50;
-      opacity: 0;
-      transform: translate(-50%, -50%) scale(0.8);
-      transition: opacity 0.2s ease, transform 0.2s ease;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    }
-    
-    #floating-headshot.visible {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
+
+      /* This second mask is what confines the reveal to a small window
+         around the cursor, rather than showing the photo through every
+         letter at once. --mx/--my are set by the mousemove handler below. */
+      -webkit-mask-image: radial-gradient(circle 105px at var(--mx, -9999px) var(--my, -9999px), #000 62%, transparent 100%);
+      mask-image: radial-gradient(circle 105px at var(--mx, -9999px) var(--my, -9999px), #000 62%, transparent 100%);
     }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
-  <!-- NAVIGATION BAR: Locked to 928px width with exact 136px side alignment behavior -->
-  <nav class="w-full flex items-center justify-between px-[36px] md:px-[136px] py-10 max-w-[1200px] mx-auto">
+  <!-- NAVIGATION BAR -->
+  <nav class="w-full flex items-center justify-between px-[36px] md:px-[136px] py-10 max-w-[928px] mx-auto">
     <img src="Q.png" alt="Logo" class="h-8 object-contain" />
-    
-    <div class="flex items-center justify-between w-[240px] h-[42px]">
-      <div class="w-[83px] h-[42px] bg-[#1A1A1A] rounded-[100px] p-[3px] flex items-center cursor-pointer">
-        <div class="w-[36px] h-[36px] bg-[#0A0A0A] rounded-full shadow-md"></div>
-      </div>
-      
+
+    <div class="flex items-center gap-6 h-[42px]">
+      <button id="theme-toggle" type="button" aria-pressed="false" aria-label="Toggle switch"
+        class="w-[83px] h-[42px] bg-[#1A1A1A] rounded-[100px] p-[3px] flex items-center cursor-pointer">
+        <div id="theme-toggle-knob" class="w-[36px] h-[36px] bg-[#0A0A0A] rounded-full shadow-md transition-transform duration-200"></div>
+      </button>
+
       <button class="bg-[#F4F4F4] text-black font-medium text-[13px] px-5 h-[42px] rounded-[100px] hover:scale-105 transition-transform duration-300 whitespace-nowrap">
-        Let’s Work Together 🚀
+        Let's Work Together 🚀
       </button>
     </div>
   </nav>
@@ -81,63 +94,53 @@
       Meet Quadri — Your Strategic Growth Partner
     </p>
 
-    <h1 id="hover-trigger" class="font-massive text-[#E0F11F] text-center z-10 cursor-default uppercase">
-      Quadri<br />Aminu
-    </h1>
+    <div id="hero-text-wrap">
+      <h1 id="base-text" class="font-massive text-center cursor-default uppercase">
+        Quadri<br />Aminu
+      </h1>
+      <h1 id="photo-text" aria-hidden="true" class="font-massive text-center uppercase">
+        Quadri<br />Aminu
+      </h1>
+    </div>
   </section>
 
   <!-- INTRODUCTION SECTION -->
   <section class="flex flex-col items-center mt-24 md:mt-32 px-6 max-w-[850px] mx-auto pb-32">
     <div class="text-[#E0F11F] text-3xl mb-10">✦</div>
     <p class="text-[#D1D1D1] text-[22px] md:text-[28px] leading-[1.6] text-center font-medium">
-      I'm Quadri Aminu, a Product & Delivery Leader blending product strategy, 
-      operational clarity, and technical execution to build digital systems that 
+      I'm Quadri Aminu, a Product & Delivery Leader blending product strategy,
+      operational clarity, and technical execution to build digital systems that
       work simply, scale effortlessly, and serve real user needs.
     </p>
   </section>
 
-  <img id="floating-headshot" src="headshot.png" alt="Quadri">
-
   <script>
-    const img = document.getElementById('floating-headshot');
-    const trigger = document.getElementById('hover-trigger');
-    
-    let mouseX = 0, mouseY = 0;
-    let currentX = 0, currentY = 0;
-    let isHovering = false;
+    // Cosmetic only, the site always stays in dark mode. This just lets
+    // the knob slide across the track on click so it doesn't look dead.
+    const toggle = document.getElementById('theme-toggle');
+    const knob = document.getElementById('theme-toggle-knob');
 
-    document.addEventListener('mousemove', (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
+    toggle.addEventListener('click', () => {
+      const isOn = toggle.getAttribute('aria-pressed') === 'true';
+      toggle.setAttribute('aria-pressed', String(!isOn));
+      knob.style.transform = isOn ? 'translateX(0)' : 'translateX(41px)';
     });
 
-    trigger.addEventListener('mouseenter', (e) => {
-      isHovering = true;
-      currentX = e.clientX;
-      currentY = e.clientY;
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-      
-      img.style.left = `${currentX}px`;
-      img.style.top = `${currentY}px`;
-      img.classList.add('visible');
+    const wrap = document.getElementById('hero-text-wrap');
+    const photoText = document.getElementById('photo-text');
+
+    wrap.addEventListener('mousemove', (e) => {
+      const rect = wrap.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      photoText.style.setProperty('--mx', `${x}px`);
+      photoText.style.setProperty('--my', `${y}px`);
     });
 
-    trigger.addEventListener('mouseleave', () => {
-      isHovering = false;
-      img.classList.remove('visible');
+    wrap.addEventListener('mouseleave', () => {
+      photoText.style.setProperty('--mx', '-9999px');
+      photoText.style.setProperty('--my', '-9999px');
     });
-
-    function animate() {
-      if (isHovering) {
-        currentX += (mouseX - currentX) * 0.15;
-        currentY += (mouseY - currentY) * 0.15;
-        img.style.left = `${currentX}px`;
-        img.style.top = `${currentY}px`;
-      }
-      requestAnimationFrame(animate);
-    }
-    animate();
   </script>
 </body>
 </html>
