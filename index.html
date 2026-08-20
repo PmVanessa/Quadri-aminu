@@ -29,11 +29,11 @@
       font-weight: 900;
     }
 
-    @media (max-width: 1024px) {
-      .font-massive { font-size: 140px; }
-    }
-    @media (max-width: 640px) {
-      .font-massive { font-size: 100px; }
+    /* Breakpoint measured directly off quadriaminu.com (getBoundingClientRect
+       sweep from 1440px down to 500px): it switches tiers at exactly 810px,
+       not the 1024/640px guess this used to have. */
+    @media (max-width: 809px) {
+      .font-massive { font-size: 120px; }
     }
 
     #hero-text-wrap {
@@ -45,26 +45,24 @@
       color: #E0F11F;
     }
 
-    /* Crop of Quadri's headshot, straddling the two text lines. Sized as a
-       ratio of the h1 font-size so it stays in sync with .font-massive's
-       breakpoints. Horizontal position tracks the cursor (see script below);
-       vertical position stays pinned at the seam between the two lines. */
+    /* Crop of Quadri's headshot, straddling the two text lines. Size/position
+       measured directly off the live site at each tier (not derived from a
+       formula — the two properties don't scale by the same ratio). Horizontal
+       position tracks the cursor (see script below); vertical position stays
+       pinned at the seam between the two lines. */
     .hero-photo {
       position: absolute;
       left: 50%;
       transform: translateX(calc(-50% + var(--photo-x, 0px)));
       transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      top: 143px;
-      width: 229px;
-      height: 364px;
+      top: 127.5px;
+      width: 176px;
+      height: 280px;
       object-fit: cover;
       border-radius: 9999px;
       z-index: 2;
     }
-    @media (max-width: 1024px) {
-      .hero-photo { top: 77px; width: 123px; height: 196px; }
-    }
-    @media (max-width: 640px) {
+    @media (max-width: 809px) {
       .hero-photo { top: 55px; width: 88px; height: 140px; }
     }
 
@@ -306,13 +304,14 @@
       knob.style.transform = isOn ? 'translateX(0)' : 'translateX(41px)';
     });
 
-    // Hero photo drifts horizontally with the cursor (damped to ~44% of the
-    // offset from viewport center) while staying pinned vertically at the
-    // seam between the two text lines, matching quadriaminu.com.
+    // Hero photo drifts horizontally with the cursor (damped to 0.43x the
+    // offset from viewport center, measured directly off quadriaminu.com via
+    // dispatched real mouse events at clientX 200/1200) while staying pinned
+    // vertically at the seam between the two text lines.
     const heroPhoto = document.querySelector('.hero-photo');
     window.addEventListener('mousemove', (e) => {
       const center = window.innerWidth / 2;
-      const offset = (e.clientX - center) * 0.435;
+      const offset = (e.clientX - center) * 0.43;
       heroPhoto.style.setProperty('--photo-x', `${offset}px`);
     });
   </script>
