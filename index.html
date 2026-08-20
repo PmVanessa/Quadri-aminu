@@ -45,13 +45,15 @@
       color: #E0F11F;
     }
 
-    /* Static crop of Quadri's headshot, straddling the two text lines.
-       Sized/positioned as a ratio of the h1 font-size so it stays in sync
-       with the .font-massive breakpoints above. */
+    /* Crop of Quadri's headshot, straddling the two text lines. Sized as a
+       ratio of the h1 font-size so it stays in sync with .font-massive's
+       breakpoints. Horizontal position tracks the cursor (see script below);
+       vertical position stays pinned at the seam between the two lines. */
     .hero-photo {
       position: absolute;
       left: 50%;
-      transform: translateX(-50%);
+      transform: translateX(calc(-50% + var(--photo-x, 0px)));
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       top: 143px;
       width: 229px;
       height: 364px;
@@ -82,12 +84,12 @@
     <img src="Q.png" alt="Logo" class="w-16 h-[52px] object-contain" />
 
     <div class="flex items-center gap-6 h-[42px]">
-      <button id="theme-toggle" type="button" aria-pressed="true" aria-label="Toggle switch"
+      <button id="theme-toggle" type="button" aria-pressed="false" aria-label="Toggle switch"
         class="w-[83px] h-[42px] bg-[#1A1A1A] rounded-[100px] p-[3px] flex items-center cursor-pointer">
-        <div id="theme-toggle-knob" class="w-[36px] h-[36px] bg-[#0A0A0A] rounded-full shadow-md transition-transform duration-200" style="transform: translateX(41px);"></div>
+        <div id="theme-toggle-knob" class="w-[36px] h-[36px] bg-[#F0F0F0] rounded-full shadow-md transition-transform duration-200" style="transform: translateX(0);"></div>
       </button>
 
-      <button class="bg-[#F4F4F4] text-black font-medium text-[13px] px-5 h-[42px] rounded-[100px] hover:scale-105 transition-transform duration-300 whitespace-nowrap">
+      <button class="bg-[#F4F4F4] text-black font-medium text-[13px] px-5 h-[42px] rounded-[100px] hover:bg-[#E0F11F] hover:scale-105 transition-all duration-300 whitespace-nowrap">
         Let's Work Together 🚀
       </button>
     </div>
@@ -302,6 +304,16 @@
       const isOn = toggle.getAttribute('aria-pressed') === 'true';
       toggle.setAttribute('aria-pressed', String(!isOn));
       knob.style.transform = isOn ? 'translateX(0)' : 'translateX(41px)';
+    });
+
+    // Hero photo drifts horizontally with the cursor (damped to ~44% of the
+    // offset from viewport center) while staying pinned vertically at the
+    // seam between the two text lines, matching quadriaminu.com.
+    const heroPhoto = document.querySelector('.hero-photo');
+    window.addEventListener('mousemove', (e) => {
+      const center = window.innerWidth / 2;
+      const offset = (e.clientX - center) * 0.435;
+      heroPhoto.style.setProperty('--photo-x', `${offset}px`);
     });
   </script>
 </body>
