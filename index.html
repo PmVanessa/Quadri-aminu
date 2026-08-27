@@ -72,6 +72,13 @@
       .nav-cta { display: none; }
     }
 
+    /* Footer is a genuine two-column layout (text | form) at desktop widths,
+       not a stacked single column -- stacks below 810px like everything else. */
+    .footer-columns { display: flex; gap: 68px; }
+    @media (max-width: 809px) {
+      .footer-columns { flex-direction: column; gap: 32px; }
+    }
+
     @keyframes marquee {
       from { transform: translateX(0); }
       to { transform: translateX(-50%); }
@@ -261,43 +268,46 @@
   </section>
 
   <!-- FOOTER CTA -->
-  <section class="flex flex-col px-6 max-w-[850px] mx-auto pb-24 gap-6">
-    <div class="flex items-center gap-6">
-      <h2 class="uppercase text-[#E0F11F] text-[36px] md:text-[52px] font-black leading-[1.05] whitespace-nowrap" style="font-family:'Big Shoulders Display',sans-serif;">
+  <section class="w-[min(928px,calc(100%-50px))] mx-auto pt-[82px] pb-24">
+    <div class="flex items-center gap-6 mb-[64px]">
+      <h2 class="uppercase text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] whitespace-nowrap" style="font-family:'Big Shoulders Display',sans-serif;">
         Ready to Drive Results?
       </h2>
-      <div class="hidden md:block flex-1 h-px bg-gradient-to-r from-white/20 to-[#E0F11F]"></div>
-    </div>
-    <p class="text-white/50 text-[16px] md:text-[18px] max-w-[600px] leading-[1.7]">
-      Let's discuss how we can collaborate to solve your toughest challenges. Whether you need strategic direction, systems thinking, or execution — I'm here to help
-    </p>
-
-    <div class="flex flex-col gap-2 mt-2 text-[14px] text-white/80">
-      <p>📄 Download My CV</p>
-      <a href="mailto:aminuQ@gmail.com" class="text-[#E0F11F] hover:underline transition-colors">📧 aminuQ@gmail.com</a>
+      <div class="flex-1 h-px bg-gradient-to-r from-white/20 to-[#E0F11F]"></div>
     </div>
 
-    <form class="flex flex-col gap-3 mt-6 w-full">
-      <div class="flex flex-row gap-3">
-        <div class="flex-1 min-w-0 bg-white/10 rounded-[8px]">
-          <input type="text" placeholder="Jane Smith" required
-            class="w-full min-w-0 bg-transparent px-4 md:px-5 py-4 text-[14px] md:text-[16px] text-[#F0F0F0] placeholder-white/40 focus:outline-none" />
-        </div>
-        <div class="flex-1 min-w-0 bg-white/10 rounded-[8px]">
-          <input type="email" placeholder="jane@framer.com" required
-            class="w-full min-w-0 bg-transparent px-4 md:px-5 py-4 text-[14px] md:text-[16px] text-[#F0F0F0] placeholder-white/40 focus:outline-none" />
+    <div class="footer-columns">
+      <div class="flex-1">
+        <p class="text-[#F0F0F0] text-[22px] leading-[1.5]">
+          Let's discuss how we can collaborate to solve your toughest challenges. Whether you need strategic direction, systems thinking, or execution — I'm here to help
+        </p>
+        <div class="flex flex-col gap-[3px] mt-[38px] text-[14px] text-white/80">
+          <p>📄 Download My CV</p>
+          <a href="mailto:aminuQ@gmail.com" class="text-[#E0F11F] hover:underline transition-colors">📧 aminuQ@gmail.com</a>
         </div>
       </div>
-      <div class="bg-white/10 rounded-[8px]">
-        <textarea placeholder="Message..." rows="4"
-          class="w-full bg-transparent px-5 py-4 text-[16px] text-[#F0F0F0] placeholder-white/40 focus:outline-none resize-y"></textarea>
-      </div>
-      <button type="submit"
-        class="bg-[#E0F11F] text-black text-[14px] font-medium px-6 py-4 rounded-[8px] hover:scale-[1.01] transition-transform duration-300">
-        Send
-      </button>
-    </form>
 
+      <form class="flex-1 flex flex-col gap-3">
+        <div class="flex flex-row gap-3">
+          <div class="flex-1 min-w-0 bg-white/10 rounded-[8px]">
+            <input type="text" placeholder="Jane Smith" required
+              class="w-full min-w-0 bg-transparent px-4 md:px-5 py-4 text-[14px] md:text-[16px] text-[#F0F0F0] placeholder-white/40 focus:outline-none" />
+          </div>
+          <div class="flex-1 min-w-0 bg-white/10 rounded-[8px]">
+            <input type="email" placeholder="jane@framer.com" required
+              class="w-full min-w-0 bg-transparent px-4 md:px-5 py-4 text-[14px] md:text-[16px] text-[#F0F0F0] placeholder-white/40 focus:outline-none" />
+          </div>
+        </div>
+        <div class="bg-white/10 rounded-[8px]">
+          <textarea placeholder="Message..." rows="4"
+            class="w-full bg-transparent px-5 py-4 text-[16px] text-[#F0F0F0] placeholder-white/40 focus:outline-none resize-y"></textarea>
+        </div>
+        <button type="submit"
+          class="bg-[#E0F11F] text-black text-[14px] font-medium px-6 py-4 rounded-[8px] hover:scale-[1.01] transition-transform duration-300">
+          Send
+        </button>
+      </form>
+    </div>
   </section>
 
   <!-- SOCIAL LINKS MARQUEE -->
