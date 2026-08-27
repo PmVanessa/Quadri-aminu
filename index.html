@@ -86,12 +86,16 @@
     .animate-marquee {
       animation: marquee 18s linear infinite;
     }
-    /* Speed measured directly off quadriaminu.com: tracked the social row's
-       on-screen position across two screenshots taken 2s apart (~37px/s),
-       since the transform is driven by Framer's JS rather than a CSS
-       animation, so it couldn't be read from a computed style. */
+    /* Speed target (~37px/s) is from an earlier screenshot-based measurement
+       of quadriaminu.com's row (JS-driven transform, not a CSS animation, so
+       it can't be read from a computed style) -- recorded here since this
+       automation's tab is stuck in a backgrounded/hidden state that pauses
+       all animation, blocking re-verification. Duration = trackWidth/2 (the
+       -50% travel distance, 1965.5px for the current 6x-repeat content) /
+       37px/s. Recompute this if the content (font-size, icon count/size,
+       gaps) changes, since that changes trackWidth. */
     .animate-marquee-social {
-      animation: marquee 45s linear infinite;
+      animation: marquee 53s linear infinite;
     }
   </style>
 </head>
@@ -311,11 +315,38 @@
   </section>
 
   <!-- SOCIAL LINKS MARQUEE -->
-  <section class="w-full overflow-hidden py-[10px]">
+  <!-- pb is 66px (not the section's own 10px padding) to match the measured
+       gap from the marquee row's bottom to the true end of the live page --
+       there's ~56px of extra space below the section on quadriaminu.com that
+       traces to an ancestor wrapper, not the section itself, but since our
+       marquee section is the last element on the page either way, matching
+       the net gap directly here gets the same visual result. -->
+  <section class="w-full overflow-hidden pt-[10px] pb-[66px]">
     <div class="flex items-center gap-[30px] whitespace-nowrap animate-marquee-social w-max" style="font-family:'Big Shoulders Display',sans-serif;">
-      <!-- Repeated 5x so the -50% translateX loop is seamless. Sparkle SVG path/fill
-           extracted directly from quadriaminu.com's icon symbol (viewBox 0 0 56 56,
+      <!-- Repeated 6x (an EVEN count) so translateX(-50%) lands exactly on a
+           group boundary and the loop has no visible seam/jump -- 3 repeats
+           (odd) was the actual bug behind the marquee looking like it "ends"
+           instead of running endlessly. Sparkle SVG path/fill extracted
+           directly from quadriaminu.com's icon symbol (viewBox 0 0 56 56,
            fill rgba(255,255,255,0.1)) rather than approximated with a text glyph. -->
+      <a href="https://www.linkedin.com/in/aminu-quadri/" target="_blank" rel="noopener noreferrer" class="social-link text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] hover:text-white hover:line-through transition-colors">LinkedIn</a>
+      <svg viewBox="0 0 56 56" class="w-14 h-14 shrink-0"><path fill="rgba(255,255,255,0.1)" d="M 26.542 56 C 24.387 43.645 12.23 32.033 0 29.458 L 0 26.396 C 12.307 23.456 24.134 12.764 26.542 0 L 29.604 0 C 31.697 12.437 43.799 23.733 56 26.396 L 56 29.458 C 44.024 31.94 31.624 43.591 29.604 56 Z"/></svg>
+      <a href="https://x.com/quadamin" target="_blank" rel="noopener noreferrer" class="social-link text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] hover:text-white hover:line-through transition-colors">Twitter</a>
+      <svg viewBox="0 0 56 56" class="w-14 h-14 shrink-0"><path fill="rgba(255,255,255,0.1)" d="M 26.542 56 C 24.387 43.645 12.23 32.033 0 29.458 L 0 26.396 C 12.307 23.456 24.134 12.764 26.542 0 L 29.604 0 C 31.697 12.437 43.799 23.733 56 26.396 L 56 29.458 C 44.024 31.94 31.624 43.591 29.604 56 Z"/></svg>
+      <a href="https://www.instagram.com/quadamin_/" target="_blank" rel="noopener noreferrer" class="social-link text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] hover:text-white hover:line-through transition-colors">Instagram</a>
+      <svg viewBox="0 0 56 56" class="w-14 h-14 shrink-0"><path fill="rgba(255,255,255,0.1)" d="M 26.542 56 C 24.387 43.645 12.23 32.033 0 29.458 L 0 26.396 C 12.307 23.456 24.134 12.764 26.542 0 L 29.604 0 C 31.697 12.437 43.799 23.733 56 26.396 L 56 29.458 C 44.024 31.94 31.624 43.591 29.604 56 Z"/></svg>
+      <a href="https://www.linkedin.com/in/aminu-quadri/" target="_blank" rel="noopener noreferrer" class="social-link text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] hover:text-white hover:line-through transition-colors">LinkedIn</a>
+      <svg viewBox="0 0 56 56" class="w-14 h-14 shrink-0"><path fill="rgba(255,255,255,0.1)" d="M 26.542 56 C 24.387 43.645 12.23 32.033 0 29.458 L 0 26.396 C 12.307 23.456 24.134 12.764 26.542 0 L 29.604 0 C 31.697 12.437 43.799 23.733 56 26.396 L 56 29.458 C 44.024 31.94 31.624 43.591 29.604 56 Z"/></svg>
+      <a href="https://x.com/quadamin" target="_blank" rel="noopener noreferrer" class="social-link text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] hover:text-white hover:line-through transition-colors">Twitter</a>
+      <svg viewBox="0 0 56 56" class="w-14 h-14 shrink-0"><path fill="rgba(255,255,255,0.1)" d="M 26.542 56 C 24.387 43.645 12.23 32.033 0 29.458 L 0 26.396 C 12.307 23.456 24.134 12.764 26.542 0 L 29.604 0 C 31.697 12.437 43.799 23.733 56 26.396 L 56 29.458 C 44.024 31.94 31.624 43.591 29.604 56 Z"/></svg>
+      <a href="https://www.instagram.com/quadamin_/" target="_blank" rel="noopener noreferrer" class="social-link text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] hover:text-white hover:line-through transition-colors">Instagram</a>
+      <svg viewBox="0 0 56 56" class="w-14 h-14 shrink-0"><path fill="rgba(255,255,255,0.1)" d="M 26.542 56 C 24.387 43.645 12.23 32.033 0 29.458 L 0 26.396 C 12.307 23.456 24.134 12.764 26.542 0 L 29.604 0 C 31.697 12.437 43.799 23.733 56 26.396 L 56 29.458 C 44.024 31.94 31.624 43.591 29.604 56 Z"/></svg>
+      <a href="https://www.linkedin.com/in/aminu-quadri/" target="_blank" rel="noopener noreferrer" class="social-link text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] hover:text-white hover:line-through transition-colors">LinkedIn</a>
+      <svg viewBox="0 0 56 56" class="w-14 h-14 shrink-0"><path fill="rgba(255,255,255,0.1)" d="M 26.542 56 C 24.387 43.645 12.23 32.033 0 29.458 L 0 26.396 C 12.307 23.456 24.134 12.764 26.542 0 L 29.604 0 C 31.697 12.437 43.799 23.733 56 26.396 L 56 29.458 C 44.024 31.94 31.624 43.591 29.604 56 Z"/></svg>
+      <a href="https://x.com/quadamin" target="_blank" rel="noopener noreferrer" class="social-link text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] hover:text-white hover:line-through transition-colors">Twitter</a>
+      <svg viewBox="0 0 56 56" class="w-14 h-14 shrink-0"><path fill="rgba(255,255,255,0.1)" d="M 26.542 56 C 24.387 43.645 12.23 32.033 0 29.458 L 0 26.396 C 12.307 23.456 24.134 12.764 26.542 0 L 29.604 0 C 31.697 12.437 43.799 23.733 56 26.396 L 56 29.458 C 44.024 31.94 31.624 43.591 29.604 56 Z"/></svg>
+      <a href="https://www.instagram.com/quadamin_/" target="_blank" rel="noopener noreferrer" class="social-link text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] hover:text-white hover:line-through transition-colors">Instagram</a>
+      <svg viewBox="0 0 56 56" class="w-14 h-14 shrink-0"><path fill="rgba(255,255,255,0.1)" d="M 26.542 56 C 24.387 43.645 12.23 32.033 0 29.458 L 0 26.396 C 12.307 23.456 24.134 12.764 26.542 0 L 29.604 0 C 31.697 12.437 43.799 23.733 56 26.396 L 56 29.458 C 44.024 31.94 31.624 43.591 29.604 56 Z"/></svg>
       <a href="https://www.linkedin.com/in/aminu-quadri/" target="_blank" rel="noopener noreferrer" class="social-link text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] hover:text-white hover:line-through transition-colors">LinkedIn</a>
       <svg viewBox="0 0 56 56" class="w-14 h-14 shrink-0"><path fill="rgba(255,255,255,0.1)" d="M 26.542 56 C 24.387 43.645 12.23 32.033 0 29.458 L 0 26.396 C 12.307 23.456 24.134 12.764 26.542 0 L 29.604 0 C 31.697 12.437 43.799 23.733 56 26.396 L 56 29.458 C 44.024 31.94 31.624 43.591 29.604 56 Z"/></svg>
       <a href="https://x.com/quadamin" target="_blank" rel="noopener noreferrer" class="social-link text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] hover:text-white hover:line-through transition-colors">Twitter</a>
