@@ -88,14 +88,15 @@
     }
     /* Speed target (~37px/s) is from an earlier screenshot-based measurement
        of quadriaminu.com's row (JS-driven transform, not a CSS animation, so
-       it can't be read from a computed style) -- recorded here since this
-       automation's tab is stuck in a backgrounded/hidden state that pauses
-       all animation, blocking re-verification. Duration = trackWidth/2 (the
-       -50% travel distance, 1965.5px for the current 6x-repeat content) /
-       37px/s. Recompute this if the content (font-size, icon count/size,
-       gaps) changes, since that changes trackWidth. */
+       it can't be read from a computed style -- retried multiple times in
+       this session but Chrome throttles setTimeout/rAF on the automated tab,
+       so a fresh live re-measurement isn't obtainable here). Duration =
+       trackWidth/2 (the -50% travel distance) / 37px/s. Track is 4981px wide
+       after fixing the item gap to the measured 60px, so 2490.5/37 = 67.3s.
+       Recompute this if the content (font-size, icon count/size, gaps)
+       changes, since that changes trackWidth. */
     .animate-marquee-social {
-      animation: marquee 53s linear infinite;
+      animation: marquee 67.3s linear infinite;
     }
   </style>
 </head>
@@ -272,7 +273,7 @@
   </section>
 
   <!-- FOOTER CTA -->
-  <section class="w-[min(928px,calc(100%-50px))] mx-auto pt-[82px] pb-24">
+  <section class="w-[min(928px,calc(100%-50px))] mx-auto pt-[82px] pb-[80px]">
     <div class="flex items-center gap-[40px] mb-[64px]">
       <h2 class="uppercase text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] whitespace-nowrap" style="font-family:'Big Shoulders Display',sans-serif;">
         Ready to Drive Results?
@@ -282,32 +283,32 @@
 
     <div class="footer-columns">
       <div class="flex-1">
-        <p class="text-[#F0F0F0] text-[22px] leading-[1.5]">
+        <p class="text-[#F0F0F0] text-[22px] leading-[1.7]">
           Let's discuss how we can collaborate to solve your toughest challenges. Whether you need strategic direction, systems thinking, or execution — I'm here to help
         </p>
-        <div class="flex flex-col gap-[3px] mt-[38px] text-[14px] text-white/80">
+        <div class="flex flex-col gap-[3px] mt-[38px] text-[18px] text-[#F0F0F0]">
           <p>📄 Download My CV</p>
           <a href="mailto:aminuQ@gmail.com" class="text-[#E0F11F] hover:underline transition-colors">📧 aminuQ@gmail.com</a>
         </div>
       </div>
 
-      <form class="flex-1 flex flex-col gap-3">
-        <div class="flex flex-row gap-3">
-          <div class="flex-1 min-w-0 bg-white/10 rounded-[8px]">
+      <form class="flex-1 flex flex-col gap-[20px]">
+        <div class="flex flex-row gap-[20px]">
+          <div class="flex-1 min-w-0 h-[40px] bg-[rgba(240,240,240,0.1)] rounded-[8px] flex items-center">
             <input type="text" placeholder="Jane Smith" required
-              class="w-full min-w-0 bg-transparent px-4 md:px-5 py-4 text-[14px] md:text-[16px] text-[#F0F0F0] placeholder-[rgba(240,240,240,0.5)] focus:outline-none" />
+              class="w-full min-w-0 bg-transparent px-4 md:px-5 text-[16px] text-[#F0F0F0] placeholder-[rgba(240,240,240,0.5)] focus:outline-none" />
           </div>
-          <div class="flex-1 min-w-0 bg-white/10 rounded-[8px]">
+          <div class="flex-1 min-w-0 h-[40px] bg-[rgba(240,240,240,0.1)] rounded-[8px] flex items-center">
             <input type="email" placeholder="jane@framer.com" required
-              class="w-full min-w-0 bg-transparent px-4 md:px-5 py-4 text-[14px] md:text-[16px] text-[#F0F0F0] placeholder-[rgba(240,240,240,0.5)] focus:outline-none" />
+              class="w-full min-w-0 bg-transparent px-4 md:px-5 text-[16px] text-[#F0F0F0] placeholder-[rgba(240,240,240,0.5)] focus:outline-none" />
           </div>
         </div>
-        <div class="bg-white/10 rounded-[8px]">
+        <div class="h-[150px] bg-[rgba(240,240,240,0.1)] rounded-[8px]">
           <textarea placeholder="Message..." rows="4"
-            class="w-full bg-transparent px-5 py-4 text-[16px] text-[#F0F0F0] placeholder-[rgba(240,240,240,0.5)] focus:outline-none resize-y"></textarea>
+            class="w-full h-full bg-transparent px-5 py-4 text-[16px] text-[#F0F0F0] placeholder-[rgba(240,240,240,0.5)] focus:outline-none resize-none"></textarea>
         </div>
         <button type="submit"
-          class="bg-[#E0F11F] text-[#121212] text-[16px] font-medium py-4 rounded-[8px] hover:scale-[1.01] transition-transform duration-300">
+          class="w-full h-[55px] bg-[#E0F11F] text-[#121212] text-[16px] font-medium rounded-[8px] hover:scale-[1.01] transition-transform duration-300">
           Send
         </button>
       </form>
@@ -315,14 +316,10 @@
   </section>
 
   <!-- SOCIAL LINKS MARQUEE -->
-  <!-- pb is 66px (not the section's own 10px padding) to match the measured
-       gap from the marquee row's bottom to the true end of the live page --
-       there's ~56px of extra space below the section on quadriaminu.com that
-       traces to an ancestor wrapper, not the section itself, but since our
-       marquee section is the last element on the page either way, matching
-       the net gap directly here gets the same visual result. -->
-  <section class="w-full overflow-hidden pt-[10px] pb-[66px]">
-    <div class="flex items-center gap-[30px] whitespace-nowrap animate-marquee-social w-max" style="font-family:'Big Shoulders Display',sans-serif;">
+  <!-- pb was set to 66px to match the measured live-site gap, but the user
+       asked for it larger (100px) by eye. -->
+  <section class="w-full overflow-hidden pt-[123.4px] pb-[123.4px]">
+    <div class="flex items-center gap-[60px] whitespace-nowrap animate-marquee-social w-max" style="font-family:'Big Shoulders Display',sans-serif;">
       <!-- Repeated 6x (an EVEN count) so translateX(-50%) lands exactly on a
            group boundary and the loop has no visible seam/jump -- 3 repeats
            (odd) was the actual bug behind the marquee looking like it "ends"
