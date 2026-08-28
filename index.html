@@ -273,7 +273,12 @@
   </section>
 
   <!-- FOOTER CTA -->
-  <section class="w-[min(928px,calc(100%-50px))] mx-auto pt-[82px] pb-[80px]">
+  <!-- Pinned-stacking: this section stays fixed in the viewport for an extra
+       scroll distance (the outer wrapper is taller than the content) while
+       the marquee below scrolls up and visually covers it, then both
+       continue scrolling together once the wrapper is exhausted. -->
+  <div class="relative">
+    <section class="sticky top-0 w-[min(928px,calc(100%-50px))] mx-auto pt-[82px] pb-[80px] bg-[#121212] z-[1]">
     <div class="flex items-center gap-[40px] mb-[64px]">
       <h2 class="uppercase text-[#E0F11F] text-[32px] leading-[1.4] font-bold tracking-[1.28px] whitespace-nowrap" style="font-family:'Big Shoulders Display',sans-serif;">
         Ready to Drive Results?
@@ -315,7 +320,9 @@
         </button>
       </form>
     </div>
-  </section>
+    </section>
+    <div class="h-[300px]"></div>
+  </div>
 
   <!-- SOCIAL LINKS MARQUEE -->
   <!-- pb was set to 66px to match the measured live-site gap, but the user
