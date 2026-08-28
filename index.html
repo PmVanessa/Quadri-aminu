@@ -274,9 +274,11 @@
 
   <!-- FOOTER CTA -->
   <!-- Pinned-stacking: this section stays fixed in the viewport for an extra
-       scroll distance (the outer wrapper is taller than the content) while
-       the marquee below scrolls up and visually covers it, then both
-       continue scrolling together once the wrapper is exhausted. -->
+       scroll distance (the outer wrapper is taller than the content). Being
+       sticky + opaque + z-[1] over the marquee's plain static position means
+       THIS section covers the marquee (not the other way around) whenever
+       they overlap -- scrolling up, the marquee gets covered as the form
+       comes fully into view; scrolling down past the pin reveals it. -->
   <div class="relative">
     <section class="sticky top-0 w-[min(928px,calc(100%-50px))] mx-auto pt-[82px] pb-[80px] bg-[#121212] z-[1]">
     <div class="flex items-center gap-[40px] mb-[64px]">
