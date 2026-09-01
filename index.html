@@ -273,14 +273,17 @@
   </section>
 
   <!-- FOOTER CTA -->
-  <!-- Pinned-stacking: this section stays fixed in the viewport for an extra
-       scroll distance (the outer wrapper is taller than the content). Being
-       sticky + opaque + z-[1] over the marquee's plain static position means
-       THIS section covers the marquee (not the other way around) whenever
-       they overlap -- scrolling up, the marquee gets covered as the form
-       comes fully into view; scrolling down past the pin reveals it. -->
-  <div class="relative">
-    <section class="sticky top-0 w-[min(928px,calc(100%-50px))] mx-auto pt-[82px] pb-[80px] bg-[#121212] z-[1]">
+  <!-- The MARQUEE is the one that stays fixed in place (sticky to viewport
+       bottom, see its section below) -- this form section is normal scrolling
+       content. Because it's opaque and given a higher stacking order (relative
+       + z-10) than the sticky marquee, it visually covers the marquee
+       completely as it scrolls over that same screen position -- a clean
+       cover, not a partial peek. The background must be full-width (the
+       marquee is edge-to-edge) even though the content column stays at the
+       usual 928px max-width, otherwise the marquee's outer edges never get
+       covered no matter what. -->
+  <section class="relative z-10 w-full pt-[82px] pb-[80px] bg-[#121212]">
+    <div class="w-[min(928px,calc(100%-50px))] mx-auto">
     <div class="flex items-center gap-[40px] mb-[64px]">
       <h2 class="uppercase text-[#E0F11F] text-[32px] leading-[1.4] font-bold tracking-[1.28px] whitespace-nowrap" style="font-family:'Big Shoulders Display',sans-serif;">
         Ready to Drive Results?
@@ -322,14 +325,16 @@
         </button>
       </form>
     </div>
-    </section>
-    <div class="h-[300px]"></div>
-  </div>
+    </div>
+  </section>
 
   <!-- SOCIAL LINKS MARQUEE -->
-  <!-- pb was set to 66px to match the measured live-site gap, but the user
-       asked for it larger (100px) by eye. -->
-  <section class="w-full overflow-hidden pt-[123.4px] pb-[123.4px]">
+  <!-- This is the element that stays fixed in place: sticky to the bottom of
+       the viewport, so it never scrolls with the page. The form section
+       above scrolls normally and, being opaque with a higher z-index, covers
+       this completely (not partially) whenever it scrolls over this same
+       screen position. -->
+  <section class="sticky bottom-0 w-full overflow-hidden pt-[123.4px] pb-[123.4px]">
     <div class="flex items-center gap-[60px] whitespace-nowrap animate-marquee-social w-max" style="font-family:'Big Shoulders Display',sans-serif;">
       <!-- Repeated 6x (an EVEN count) so translateX(-50%) lands exactly on a
            group boundary and the loop has no visible seam/jump -- 3 repeats
@@ -398,6 +403,7 @@
       const offset = (e.clientX - center) * 0.43;
       heroPhoto.style.setProperty('--photo-x', `${offset}px`);
     });
+
   </script>
 </body>
 </html>
