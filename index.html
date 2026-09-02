@@ -23,6 +23,21 @@
     }
     ::selection { background-color: #E0F11F; color: black; }
 
+    /* Measured directly off quadriaminu.com via real hover events on the
+       "Ready to Drive Results" heading line: rest state is transform:none,
+       hover state snaps to these exact translate3d/scale values (a binary
+       Framer "while-hover" variant, not continuous cursor-position tracking --
+       confirmed identical across multiple hover points along the line). */
+    .results-line-dark, .results-line-green {
+      transition: transform 0.3s ease;
+    }
+    .results-line-group.is-hovered .results-line-dark {
+      transform: translate3d(90px, 0px, 0px) scale(1.43342, 1);
+    }
+    .results-line-group.is-hovered .results-line-green {
+      transform: translate3d(70px, 0px, 0px) scale(0.4, 1);
+    }
+
     .font-massive {
       font-family: 'Big Shoulders Display', sans-serif;
       font-size: 260px;
@@ -286,12 +301,12 @@
        covered no matter what. -->
   <section class="relative z-10 w-full pt-[82px] pb-[80px] bg-[#121212]">
     <div class="w-[min(928px,calc(100%-50px))] mx-auto">
-    <div class="flex items-center gap-[40px] mb-[64px]">
+    <div class="results-line-group flex items-center gap-[40px] mb-[64px]">
       <h2 class="uppercase text-[#E0F11F] text-[32px] leading-[1.4] font-bold tracking-[1.28px] whitespace-nowrap" style="font-family:'Big Shoulders Display',sans-serif;">
         Ready to Drive Results?
       </h2>
-      <div class="relative flex-1 h-1 bg-[rgba(240,240,240,0.1)]">
-        <div class="absolute right-0 top-0 h-1 w-[40px] bg-[#E0F11F]"></div>
+      <div class="results-line-dark relative flex-1 h-1 bg-[rgba(240,240,240,0.1)]">
+        <div class="results-line-green absolute right-0 top-0 h-1 w-[40px] bg-[#E0F11F]"></div>
       </div>
     </div>
 
@@ -393,6 +408,11 @@
       const isOn = toggle.getAttribute('aria-pressed') === 'true';
       toggle.setAttribute('aria-pressed', String(!isOn));
       knob.style.transform = isOn ? 'translateX(0)' : 'translateX(42px)';
+    });
+
+    document.querySelectorAll('.results-line-group').forEach((group) => {
+      group.addEventListener('mouseenter', () => group.classList.add('is-hovered'));
+      group.addEventListener('mouseleave', () => group.classList.remove('is-hovered'));
     });
 
     // Hero photo drifts horizontally with the cursor (damped to 0.43x the
