@@ -23,19 +23,31 @@
     }
     ::selection { background-color: #E0F11F; color: black; }
 
-    /* Measured directly off quadriaminu.com via real hover events on the
-       "Ready to Drive Results" heading line: rest state is transform:none,
-       hover state snaps to these exact translate3d/scale values (a binary
-       Framer "while-hover" variant, not continuous cursor-position tracking --
-       confirmed identical across multiple hover points along the line). */
+    /* Measured directly off quadriaminu.com via real hover + pixel-matched
+       screenshots on the "Ready to Drive Results" heading line: the dark
+       line shrinks and the green accent grows and shifts toward the
+       heading. It's a one-time trigger on first hover, not a toggle --
+       confirmed it stays in the triggered state well after the cursor
+       moves away (no mouseleave revert). */
     .results-line-dark, .results-line-green {
       transition: transform 0.3s ease;
     }
     .results-line-group.is-hovered .results-line-dark {
-      transform: translate3d(90px, 0px, 0px) scale(1.43342, 1);
+      transform: translate3d(-90px, 0px, 0px) scale(0.556206, 1);
     }
     .results-line-group.is-hovered .results-line-green {
-      transform: translate3d(70px, 0px, 0px) scale(0.4, 1);
+      transform: translate3d(-70px, 0px, 0px) scale(2.5, 1);
+    }
+
+    /* Tailwind CDN's JIT parser was mangling the nested min()+calc() in
+       w-[min(928px,calc(100%-50px))], generating invalid CSS (the inner
+       calc() got stripped), which computed to width:0 and silently
+       collapsed the nav and footer containers. Replaced with plain CSS. */
+    .content-width {
+      width: calc(100% - 50px);
+      max-width: 928px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .font-massive {
@@ -121,7 +133,7 @@
 
   <!-- NAVIGATION BAR -->
   <nav class="sticky top-0 z-50 w-full py-5 bg-[#121212]">
-    <div class="flex items-center justify-between w-[min(928px,calc(100%-50px))] mx-auto">
+    <div class="flex items-center justify-between content-width">
       <img src="Q.png" alt="Logo" class="w-16 h-[52px] object-contain" />
 
       <div class="flex items-center gap-[10px] h-[42px]">
@@ -300,7 +312,7 @@
        usual 928px max-width, otherwise the marquee's outer edges never get
        covered no matter what. -->
   <section class="relative z-10 w-full pt-[82px] pb-[80px] bg-[#121212]">
-    <div class="w-[min(928px,calc(100%-50px))] mx-auto">
+    <div class="content-width">
     <div class="results-line-group flex items-center gap-[40px] mb-[64px]">
       <h2 class="uppercase text-[#E0F11F] text-[32px] leading-[1.4] font-bold tracking-[1.28px] whitespace-nowrap" style="font-family:'Big Shoulders Display',sans-serif;">
         Ready to Drive Results?
@@ -412,8 +424,7 @@
     });
 
     document.querySelectorAll('.results-line-group').forEach((group) => {
-      group.addEventListener('mouseenter', () => group.classList.add('is-hovered'));
-      group.addEventListener('mouseleave', () => group.classList.remove('is-hovered'));
+      group.addEventListener('mouseenter', () => group.classList.add('is-hovered'), { once: true });
     });
 
     // Hero photo drifts horizontally with the cursor (damped to 0.43x the
