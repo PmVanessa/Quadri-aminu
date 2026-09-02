@@ -8,7 +8,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <script src="https://cdn.tailwindcss.com"></script>
 
@@ -16,10 +16,39 @@
     body {
       background-color: #121212;
       color: white;
-      overflow-x: hidden;
-      font-family: 'Inter', sans-serif;
+      overflow-x: clip;
+      font-family: 'DM Sans', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
     ::selection { background-color: #E0F11F; color: black; }
+
+    /* Measured directly off quadriaminu.com via real hover + pixel-matched
+       screenshots on the "Ready to Drive Results" heading line: the dark
+       line shrinks and the green accent grows and shifts toward the
+       heading. It's a one-time trigger on first hover, not a toggle --
+       confirmed it stays in the triggered state well after the cursor
+       moves away (no mouseleave revert). */
+    .results-line-dark, .results-line-green {
+      transition: transform 0.3s ease;
+    }
+    .results-line-group.is-hovered .results-line-dark {
+      transform: translate3d(-90px, 0px, 0px) scale(0.556206, 1);
+    }
+    .results-line-group.is-hovered .results-line-green {
+      transform: translate3d(-70px, 0px, 0px) scale(2.5, 1);
+    }
+
+    /* Tailwind CDN's JIT parser was mangling the nested min()+calc() in
+       w-[min(928px,calc(100%-50px))], generating invalid CSS (the inner
+       calc() got stripped), which computed to width:0 and silently
+       collapsed the nav and footer containers. Replaced with plain CSS. */
+    .content-width {
+      width: calc(100% - 50px);
+      max-width: 928px;
+      margin-left: auto;
+      margin-right: auto;
+    }
 
     .font-massive {
       font-family: 'Big Shoulders Display', sans-serif;
@@ -29,69 +58,100 @@
       font-weight: 900;
     }
 
-    @media (max-width: 1024px) {
-      .font-massive { font-size: 140px; }
-    }
-    @media (max-width: 640px) {
-      .font-massive { font-size: 100px; }
+    /* Breakpoint measured directly off quadriaminu.com (getBoundingClientRect
+       sweep from 1440px down to 500px): it switches tiers at exactly 810px,
+       not the 1024/640px guess this used to have. */
+    @media (max-width: 809px) {
+      .font-massive { font-size: 120px; }
     }
 
-    /* Wrapper holds both text layers so the mask coordinates line up exactly */
     #hero-text-wrap {
       position: relative;
       display: inline-block;
     }
 
-    /* Bottom layer: the plain yellow text, always visible */
     #base-text {
       color: #E0F11F;
     }
 
-    /* Top layer: identical text, filled with the photo instead of colour.
-       background-clip: text means the photo can only ever paint inside
-       the letter shapes, never the black background around them. */
-    #photo-text {
+    /* Crop of Quadri's headshot, straddling the two text lines. Size/position
+       measured directly off the live site at each tier (not derived from a
+       formula — the two properties don't scale by the same ratio). Horizontal
+       position tracks the cursor (see script below); vertical position stays
+       pinned at the seam between the two lines. */
+    .hero-photo {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      color: transparent;
-      background-image: url('headshot.png');
-      background-size: cover;
-      background-position: center;
-      -webkit-background-clip: text;
-      background-clip: text;
-      pointer-events: none;
+      left: 50%;
+      transform: translateX(calc(-50% + var(--photo-x, 0px)));
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      top: 127.5px;
+      width: 176px;
+      height: 280px;
+      object-fit: cover;
+      border-radius: 9999px;
+      z-index: 2;
+    }
+    @media (max-width: 809px) {
+      .hero-photo { top: 55px; width: 88px; height: 140px; }
+    }
 
-      /* This second mask is what confines the reveal to a small window
-         around the cursor, rather than showing the photo through every
-         letter at once. --mx/--my are set by the mousemove handler below. */
-      -webkit-mask-image: radial-gradient(circle 105px at var(--mx, -9999px) var(--my, -9999px), #000 62%, transparent 100%);
-      mask-image: radial-gradient(circle 105px at var(--mx, -9999px) var(--my, -9999px), #000 62%, transparent 100%);
+    /* The CTA button disappears below the same 810px breakpoint on the live
+       site (nav shows only the logo + toggle at mobile widths). */
+    @media (max-width: 809px) {
+      .nav-cta { display: none; }
+    }
+
+    /* Footer is a genuine two-column layout (text | form) at desktop widths,
+       not a stacked single column -- stacks below 810px like everything else. */
+    .footer-columns { display: flex; gap: 68px; }
+    @media (max-width: 809px) {
+      .footer-columns { flex-direction: column; gap: 32px; }
+    }
+
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+    .animate-marquee {
+      animation: marquee 18s linear infinite;
+    }
+    /* Speed target (~37px/s) is from an earlier screenshot-based measurement
+       of quadriaminu.com's row (JS-driven transform, not a CSS animation, so
+       it can't be read from a computed style -- retried multiple times in
+       this session but Chrome throttles setTimeout/rAF on the automated tab,
+       so a fresh live re-measurement isn't obtainable here). Duration =
+       trackWidth/2 (the -50% travel distance) / 37px/s. Track is 4981px wide
+       after fixing the item gap to the measured 60px, so 2490.5/37 = 67.3s.
+       Recompute this if the content (font-size, icon count/size, gaps)
+       changes, since that changes trackWidth. */
+    .animate-marquee-social {
+      animation: marquee 67.3s linear infinite;
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col pt-[30px]">
 
   <!-- NAVIGATION BAR -->
-  <nav class="w-full flex items-center justify-between px-[36px] md:px-[136px] py-5 max-w-[928px] mx-auto">
-    <img src="Q.png" alt="Logo" class="w-16 h-[52px] object-contain" />
+  <nav class="sticky top-0 z-50 w-full py-5 bg-[#121212]">
+    <div class="flex items-center justify-between content-width">
+      <img src="Q.png" alt="Logo" class="w-16 h-[52px] object-contain" />
 
-    <div class="flex items-center gap-6 h-[42px]">
-      <button id="theme-toggle" type="button" aria-pressed="true" aria-label="Toggle switch"
-        class="w-[83px] h-[42px] bg-[#1A1A1A] rounded-[100px] p-[3px] flex items-center cursor-pointer">
-        <div id="theme-toggle-knob" class="w-[36px] h-[36px] bg-[#0A0A0A] rounded-full shadow-md transition-transform duration-200" style="transform: translateX(41px);"></div>
-      </button>
+      <div class="flex items-center gap-[10px] h-[42px]">
+        <button id="theme-toggle" type="button" aria-pressed="false" aria-label="Toggle switch"
+          class="w-[83px] h-[42px] bg-white/10 rounded-[100px] p-[5px] flex items-center cursor-pointer">
+          <div id="theme-toggle-knob" class="w-[31px] h-[31px] bg-[#121212] rounded-full shadow-md transition-transform duration-200" style="transform: translateX(0);"></div>
+        </button>
 
-      <button class="bg-[#F4F4F4] text-black font-medium text-[13px] px-5 h-[42px] rounded-[100px] hover:scale-105 transition-transform duration-300 whitespace-nowrap">
-        Let's Work Together 🚀
-      </button>
+        <button class="nav-cta bg-[#F4F4F4] text-black font-semibold text-[16px] px-8 h-[42px] rounded-[100px] hover:bg-[#E0F11F] hover:scale-105 transition-all duration-300 whitespace-nowrap">
+          Let's Work Together 🚀
+        </button>
+      </div>
     </div>
   </nav>
 
   <!-- HERO SECTION -->
   <section class="relative flex flex-col items-center justify-center flex-grow mt-[80px] px-4">
-    <p class="text-[#7A7A7A] uppercase tracking-[0.25em] text-[11px] md:text-[13px] mb-8 font-medium z-10 text-center">
+    <p class="text-white/50 uppercase tracking-[0.08em] text-[14px] mb-8 font-medium z-10 text-center">
       Meet Quadri — Your Strategic Growth Partner
     </p>
 
@@ -99,20 +159,244 @@
       <h1 id="base-text" class="font-massive text-center cursor-default uppercase">
         Quadri<br />Aminu
       </h1>
-      <h1 id="photo-text" aria-hidden="true" class="font-massive text-center uppercase">
-        Quadri<br />Aminu
-      </h1>
+      <img src="headshot-crop.jpg" alt="Quadri Aminu" class="hero-photo" />
     </div>
   </section>
 
   <!-- INTRODUCTION SECTION -->
-  <section class="flex flex-col items-center mt-24 md:mt-32 px-6 max-w-[850px] mx-auto pb-32">
+  <section class="flex flex-col items-center mt-24 md:mt-32 px-6 max-w-[850px] mx-auto pb-20">
     <div class="text-[#E0F11F] text-3xl mb-10">✦</div>
     <p class="text-[#D1D1D1] text-[22px] md:text-[28px] leading-[1.6] text-center font-medium">
       I'm Quadri Aminu, a Product & Delivery Leader blending product strategy,
       operational clarity, and technical execution to build digital systems that
       work simply, scale effortlessly, and serve real user needs.
     </p>
+  </section>
+
+  <!-- ABOUT SECTION -->
+  <section class="flex flex-col mt-8 md:mt-16 px-6 max-w-[850px] mx-auto pb-24 gap-6">
+    <p class="text-[#7A7A7A] uppercase tracking-[0.25em] text-[11px] md:text-[13px] font-medium">ABOUT</p>
+
+    <p class="text-[#F0F0F0]/50 text-[16px] md:text-[18px] leading-[1.7]">
+      With a passion for solving complex business challenges, I bring a hybrid approach that blends data-driven strategy, digital innovation, and people-focused change.
+    </p>
+    <p class="text-[#F0F0F0]/50 text-[16px] md:text-[18px] leading-[1.7]">
+      Over the past 10+ years, I've worked across industries including <strong class="text-[#F0F0F0] font-bold">oil and gas, marine logistics, edtech, insurtech, gaming, education, mental health</strong>, and <strong class="text-[#F0F0F0] font-bold">tech startups</strong>, driving operational excellence, streamlining processes, and leading impactful business transformations.
+    </p>
+    <p class="text-[#F0F0F0]/50 text-[16px] md:text-[18px] leading-[1.7]">
+      Whether you're a <strong class="text-[#F0F0F0] font-bold">founder, CEO, or department lead</strong>, I partner with you to implement scalable systems that deliver long-term value and sustainable growth.
+    </p>
+
+    <!-- STAT CARDS -->
+    <div class="flex flex-col gap-4 mt-6">
+      <div class="flex items-center justify-between bg-[#E0F11F] rounded-[8px] px-6 py-7">
+        <h4 class="text-black text-[16px] md:text-[18px] font-semibold">💼&nbsp;&nbsp;Projects Delivered</h4>
+        <div class="w-px h-8 bg-black/20 mx-4"></div>
+        <span class="text-black/30 text-[32px] md:text-[42px] font-semibold">20+</span>
+      </div>
+      <div class="flex items-center justify-between bg-[#E0F11F] rounded-[8px] px-6 py-7">
+        <h4 class="text-black text-[16px] md:text-[18px] font-semibold">🌍&nbsp;&nbsp;Clients across the world</h4>
+        <div class="w-px h-8 bg-black/20 mx-4"></div>
+        <span class="text-black/30 text-[32px] md:text-[42px] font-semibold">15+</span>
+      </div>
+      <div class="flex items-center justify-between bg-[#E0F11F] rounded-[8px] px-6 py-7">
+        <h4 class="text-black text-[16px] md:text-[18px] font-semibold">🎓&nbsp;&nbsp;Trained</h4>
+        <div class="w-px h-8 bg-black/20 mx-4"></div>
+        <span class="text-black/30 text-[32px] md:text-[42px] font-semibold">10k+</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- TOOLS MARQUEE -->
+  <section class="w-full overflow-hidden py-10 border-t border-b border-white/10">
+    <div class="flex gap-16 whitespace-nowrap animate-marquee text-[14px] tracking-[0.2em] text-white/40 font-medium w-max">
+      <span>NOTION</span><span>TRELLO</span><span>JIRA</span><span>MIRO</span>
+      <span>NOTION</span><span>TRELLO</span><span>JIRA</span><span>MIRO</span>
+      <span>NOTION</span><span>TRELLO</span><span>JIRA</span><span>MIRO</span>
+      <span>NOTION</span><span>TRELLO</span><span>JIRA</span><span>MIRO</span>
+    </div>
+  </section>
+
+  <!-- TIMELINE / LEADERSHIP SECTIONS -->
+  <section class="flex flex-col mt-20 px-6 max-w-[850px] mx-auto pb-24 gap-20">
+
+    <div>
+      <h3 class="uppercase text-[#E0F11F] text-[26px] md:text-[34px] font-black mb-8" style="font-family:'Big Shoulders Display',sans-serif;">
+        Academic &amp; Student Leadership <span class="text-white/40 text-[13px] normal-case font-normal tracking-normal">(Undergraduate &amp; Postgraduate)</span>
+      </h3>
+      <div class="flex flex-col gap-10">
+        <div>
+          <h4 class="text-white text-[17px] md:text-[18px] font-semibold">Master of Science in Project Management</h4>
+          <p class="text-white/40 text-[14px] mt-1">University of Sunderland in London</p>
+          <p class="text-white/40 text-[14px]">2022 — 2023</p>
+          <p class="text-white/60 text-[15px] leading-[1.6] mt-3">Led the community, organized project management events, created initiatives for knowledge sharing, and drove member engagement.</p>
+        </div>
+        <div>
+          <h4 class="text-white text-[17px] md:text-[18px] font-semibold">Bsc. in Electronic and Computer Engineering</h4>
+          <p class="text-white/40 text-[14px] mt-1">Lagos State University</p>
+          <p class="text-white/40 text-[14px]">2008 — 2012</p>
+          <p class="text-white/60 text-[15px] leading-[1.6] mt-3">Gained a solid foundation in software development overall. Focused on building mobile applications.</p>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h3 class="uppercase text-[#E0F11F] text-[26px] md:text-[34px] font-black mb-8" style="font-family:'Big Shoulders Display',sans-serif;">
+        Tech &amp; Professional Event Support
+      </h3>
+      <div class="flex flex-col gap-10">
+        <div>
+          <h4 class="text-white text-[17px] md:text-[18px] font-semibold">ProductCon (Product School Conference)</h4>
+          <p class="text-white/40 text-[14px] mt-1">Volunteer, Program &amp; Operations Team</p>
+          <p class="text-white/60 text-[15px] leading-[1.6] mt-3">Supported planning, logistics, and on-site coordination during a major two-day product management conference.</p>
+        </div>
+        <div>
+          <h4 class="text-white text-[17px] md:text-[18px] font-semibold">FoundersConnect (Tech Community in London)</h4>
+          <p class="text-white/40 text-[14px] mt-1">Volunteer, Program &amp; Operations Team</p>
+          <p class="text-white/60 text-[15px] leading-[1.6] mt-3">Helped execute multiple tech founder events in London, providing hands-on support for event flow and setup.</p>
+        </div>
+        <div>
+          <h4 class="text-white text-[17px] md:text-[18px] font-semibold">MICA (Pre- &amp; Post-COVID)</h4>
+          <p class="text-white/40 text-[14px] mt-1">Honorable Member, Parliament — (200 level – final year)</p>
+          <p class="text-white/60 text-[15px] leading-[1.6] mt-3">Participated in legislative sessions, student advocacy, and policy development for the student body.</p>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h3 class="uppercase text-[#E0F11F] text-[26px] md:text-[34px] font-black mb-8" style="font-family:'Big Shoulders Display',sans-serif;">
+        Community &amp; Youth Impact
+      </h3>
+      <div class="flex flex-col gap-10">
+        <div>
+          <h4 class="text-white text-[17px] md:text-[18px] font-semibold">NYSC Council — August 8 Chapter</h4>
+          <p class="text-white/40 text-[14px] mt-1">Lead, Educational Team</p>
+          <p class="text-white/60 text-[15px] leading-[1.6] mt-3">Organized digital skills workshops, developed educational initiatives, and mentored youth during national service.</p>
+        </div>
+        <div>
+          <h4 class="text-white text-[17px] md:text-[18px] font-semibold">MSSN (Muslim Students' Society of Nigeria)</h4>
+          <p class="text-white/40 text-[14px] mt-1">5th Year: Financial Secretary · 4th Year: Auditor · 3rd Year: Financial Secretary · 2nd Year: Public Relations Officer</p>
+          <p class="text-white/60 text-[15px] leading-[1.6] mt-3">Managed finances, audited records, promoted events, and communicated society values across campus.</p>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h3 class="uppercase text-[#E0F11F] text-[26px] md:text-[34px] font-black mb-8" style="font-family:'Big Shoulders Display',sans-serif;">
+        Technical &amp; Global Communities
+      </h3>
+      <div class="flex flex-col gap-10">
+        <div>
+          <h4 class="text-white text-[17px] md:text-[18px] font-semibold">IEEE / AIESEC (Electronics &amp; Computer Engineering)</h4>
+          <p class="text-white/40 text-[14px] mt-1">Advisory Board Member (300 – 500 Level)</p>
+          <p class="text-white/60 text-[15px] leading-[1.6] mt-3">Provided guidance to leadership, contributed to strategic decisions, and supported student development.</p>
+        </div>
+        <div>
+          <h4 class="text-white text-[17px] md:text-[18px] font-semibold">Google Student Ambassador</h4>
+          <p class="text-white/40 text-[14px] mt-1">Student Ambassador</p>
+          <p class="text-white/60 text-[15px] leading-[1.6] mt-3">Promoted Google products, delivered digital skills training to students, and represented Google at campus-level events.</p>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- FOOTER CTA -->
+  <!-- The MARQUEE is the one that stays fixed in place (sticky to viewport
+       bottom, see its section below) -- this form section is normal scrolling
+       content. Because it's opaque and given a higher stacking order (relative
+       + z-10) than the sticky marquee, it visually covers the marquee
+       completely as it scrolls over that same screen position -- a clean
+       cover, not a partial peek. The background must be full-width (the
+       marquee is edge-to-edge) even though the content column stays at the
+       usual 928px max-width, otherwise the marquee's outer edges never get
+       covered no matter what. -->
+  <section class="relative z-10 w-full pt-[82px] pb-[80px] bg-[#121212]">
+    <div class="content-width">
+    <div class="results-line-group flex items-center gap-[40px] mb-[64px]">
+      <h2 class="uppercase text-[#E0F11F] text-[32px] leading-[1.4] font-bold tracking-[1.28px] whitespace-nowrap" style="font-family:'Big Shoulders Display',sans-serif;">
+        Ready to Drive Results?
+      </h2>
+      <div class="relative flex-1 h-1">
+        <div class="results-line-dark absolute inset-0 bg-[rgba(240,240,240,0.1)]"></div>
+        <div class="results-line-green absolute right-0 top-0 h-1 w-[40px] bg-[#E0F11F]"></div>
+      </div>
+    </div>
+
+    <div class="footer-columns">
+      <div class="flex-1">
+        <p class="text-[#F0F0F0] text-[22px] leading-[1.7]">
+          Let's discuss how we can collaborate to solve your toughest challenges. Whether you need strategic direction, systems thinking, or execution — I'm here to help
+        </p>
+        <div class="flex flex-col gap-[3px] mt-[38px] text-[18px] text-[#F0F0F0]">
+          <p>📄 Download My CV</p>
+          <a href="mailto:aminuQ@gmail.com" class="text-[#E0F11F] hover:underline transition-colors">📧 aminuQ@gmail.com</a>
+        </div>
+      </div>
+
+      <form class="flex-1 flex flex-col gap-[20px]">
+        <div class="flex flex-row gap-[20px]">
+          <div class="flex-1 min-w-0 h-[40px] bg-[rgba(240,240,240,0.1)] rounded-[8px] flex items-center">
+            <input type="text" placeholder="Jane Smith" required
+              class="w-full min-w-0 bg-transparent px-4 md:px-5 text-[16px] text-[#F0F0F0] placeholder-[rgba(240,240,240,0.5)] focus:outline-none" />
+          </div>
+          <div class="flex-1 min-w-0 h-[40px] bg-[rgba(240,240,240,0.1)] rounded-[8px] flex items-center">
+            <input type="email" placeholder="jane@framer.com" required
+              class="w-full min-w-0 bg-transparent px-4 md:px-5 text-[16px] text-[#F0F0F0] placeholder-[rgba(240,240,240,0.5)] focus:outline-none" />
+          </div>
+        </div>
+        <div class="h-[150px] bg-[rgba(240,240,240,0.1)] rounded-[8px]">
+          <textarea placeholder="Message..." rows="4"
+            class="w-full h-full bg-transparent px-5 py-4 text-[16px] text-[#F0F0F0] placeholder-[rgba(240,240,240,0.5)] focus:outline-none resize-none"></textarea>
+        </div>
+        <button type="submit"
+          class="w-full h-[55px] bg-[#E0F11F] text-[#121212] text-[16px] font-medium rounded-[8px] hover:scale-[1.01] transition-transform duration-300">
+          Send
+        </button>
+      </form>
+    </div>
+    </div>
+  </section>
+
+  <!-- SOCIAL LINKS MARQUEE -->
+  <!-- This is the element that stays fixed in place: sticky to the bottom of
+       the viewport, so it never scrolls with the page. The form section
+       above scrolls normally and, being opaque with a higher z-index, covers
+       this completely (not partially) whenever it scrolls over this same
+       screen position. -->
+  <section class="sticky bottom-0 w-full overflow-hidden pt-[123.4px] pb-[123.4px]">
+    <div class="flex items-center gap-[60px] whitespace-nowrap animate-marquee-social w-max" style="font-family:'Big Shoulders Display',sans-serif;">
+      <!-- Repeated 6x (an EVEN count) so translateX(-50%) lands exactly on a
+           group boundary and the loop has no visible seam/jump -- 3 repeats
+           (odd) was the actual bug behind the marquee looking like it "ends"
+           instead of running endlessly. Sparkle SVG path/fill extracted
+           directly from quadriaminu.com's icon symbol (viewBox 0 0 56 56,
+           fill rgba(255,255,255,0.1)) rather than approximated with a text glyph. -->
+      <a href="https://www.linkedin.com/in/aminu-quadri/" target="_blank" rel="noopener noreferrer" class="social-link text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] hover:text-white hover:line-through transition-colors">LinkedIn</a>
+      <svg viewBox="0 0 56 56" class="w-14 h-14 shrink-0"><path fill="rgba(255,255,255,0.1)" d="M 26.542 56 C 24.387 43.645 12.23 32.033 0 29.458 L 0 26.396 C 12.307 23.456 24.134 12.764 26.542 0 L 29.604 0 C 31.697 12.437 43.799 23.733 56 26.396 L 56 29.458 C 44.024 31.94 31.624 43.591 29.604 56 Z"/></svg>
+      <a href="https://x.com/quadamin" target="_blank" rel="noopener noreferrer" class="social-link text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] hover:text-white hover:line-through transition-colors">Twitter</a>
+      <svg viewBox="0 0 56 56" class="w-14 h-14 shrink-0"><path fill="rgba(255,255,255,0.1)" d="M 26.542 56 C 24.387 43.645 12.23 32.033 0 29.458 L 0 26.396 C 12.307 23.456 24.134 12.764 26.542 0 L 29.604 0 C 31.697 12.437 43.799 23.733 56 26.396 L 56 29.458 C 44.024 31.94 31.624 43.591 29.604 56 Z"/></svg>
+      <a href="https://www.instagram.com/quadamin_/" target="_blank" rel="noopener noreferrer" class="social-link text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] hover:text-white hover:line-through transition-colors">Instagram</a>
+      <svg viewBox="0 0 56 56" class="w-14 h-14 shrink-0"><path fill="rgba(255,255,255,0.1)" d="M 26.542 56 C 24.387 43.645 12.23 32.033 0 29.458 L 0 26.396 C 12.307 23.456 24.134 12.764 26.542 0 L 29.604 0 C 31.697 12.437 43.799 23.733 56 26.396 L 56 29.458 C 44.024 31.94 31.624 43.591 29.604 56 Z"/></svg>
+      <a href="https://www.linkedin.com/in/aminu-quadri/" target="_blank" rel="noopener noreferrer" class="social-link text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] hover:text-white hover:line-through transition-colors">LinkedIn</a>
+      <svg viewBox="0 0 56 56" class="w-14 h-14 shrink-0"><path fill="rgba(255,255,255,0.1)" d="M 26.542 56 C 24.387 43.645 12.23 32.033 0 29.458 L 0 26.396 C 12.307 23.456 24.134 12.764 26.542 0 L 29.604 0 C 31.697 12.437 43.799 23.733 56 26.396 L 56 29.458 C 44.024 31.94 31.624 43.591 29.604 56 Z"/></svg>
+      <a href="https://x.com/quadamin" target="_blank" rel="noopener noreferrer" class="social-link text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] hover:text-white hover:line-through transition-colors">Twitter</a>
+      <svg viewBox="0 0 56 56" class="w-14 h-14 shrink-0"><path fill="rgba(255,255,255,0.1)" d="M 26.542 56 C 24.387 43.645 12.23 32.033 0 29.458 L 0 26.396 C 12.307 23.456 24.134 12.764 26.542 0 L 29.604 0 C 31.697 12.437 43.799 23.733 56 26.396 L 56 29.458 C 44.024 31.94 31.624 43.591 29.604 56 Z"/></svg>
+      <a href="https://www.instagram.com/quadamin_/" target="_blank" rel="noopener noreferrer" class="social-link text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] hover:text-white hover:line-through transition-colors">Instagram</a>
+      <svg viewBox="0 0 56 56" class="w-14 h-14 shrink-0"><path fill="rgba(255,255,255,0.1)" d="M 26.542 56 C 24.387 43.645 12.23 32.033 0 29.458 L 0 26.396 C 12.307 23.456 24.134 12.764 26.542 0 L 29.604 0 C 31.697 12.437 43.799 23.733 56 26.396 L 56 29.458 C 44.024 31.94 31.624 43.591 29.604 56 Z"/></svg>
+      <a href="https://www.linkedin.com/in/aminu-quadri/" target="_blank" rel="noopener noreferrer" class="social-link text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] hover:text-white hover:line-through transition-colors">LinkedIn</a>
+      <svg viewBox="0 0 56 56" class="w-14 h-14 shrink-0"><path fill="rgba(255,255,255,0.1)" d="M 26.542 56 C 24.387 43.645 12.23 32.033 0 29.458 L 0 26.396 C 12.307 23.456 24.134 12.764 26.542 0 L 29.604 0 C 31.697 12.437 43.799 23.733 56 26.396 L 56 29.458 C 44.024 31.94 31.624 43.591 29.604 56 Z"/></svg>
+      <a href="https://x.com/quadamin" target="_blank" rel="noopener noreferrer" class="social-link text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] hover:text-white hover:line-through transition-colors">Twitter</a>
+      <svg viewBox="0 0 56 56" class="w-14 h-14 shrink-0"><path fill="rgba(255,255,255,0.1)" d="M 26.542 56 C 24.387 43.645 12.23 32.033 0 29.458 L 0 26.396 C 12.307 23.456 24.134 12.764 26.542 0 L 29.604 0 C 31.697 12.437 43.799 23.733 56 26.396 L 56 29.458 C 44.024 31.94 31.624 43.591 29.604 56 Z"/></svg>
+      <a href="https://www.instagram.com/quadamin_/" target="_blank" rel="noopener noreferrer" class="social-link text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] hover:text-white hover:line-through transition-colors">Instagram</a>
+      <svg viewBox="0 0 56 56" class="w-14 h-14 shrink-0"><path fill="rgba(255,255,255,0.1)" d="M 26.542 56 C 24.387 43.645 12.23 32.033 0 29.458 L 0 26.396 C 12.307 23.456 24.134 12.764 26.542 0 L 29.604 0 C 31.697 12.437 43.799 23.733 56 26.396 L 56 29.458 C 44.024 31.94 31.624 43.591 29.604 56 Z"/></svg>
+      <a href="https://www.linkedin.com/in/aminu-quadri/" target="_blank" rel="noopener noreferrer" class="social-link text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] hover:text-white hover:line-through transition-colors">LinkedIn</a>
+      <svg viewBox="0 0 56 56" class="w-14 h-14 shrink-0"><path fill="rgba(255,255,255,0.1)" d="M 26.542 56 C 24.387 43.645 12.23 32.033 0 29.458 L 0 26.396 C 12.307 23.456 24.134 12.764 26.542 0 L 29.604 0 C 31.697 12.437 43.799 23.733 56 26.396 L 56 29.458 C 44.024 31.94 31.624 43.591 29.604 56 Z"/></svg>
+      <a href="https://x.com/quadamin" target="_blank" rel="noopener noreferrer" class="social-link text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] hover:text-white hover:line-through transition-colors">Twitter</a>
+      <svg viewBox="0 0 56 56" class="w-14 h-14 shrink-0"><path fill="rgba(255,255,255,0.1)" d="M 26.542 56 C 24.387 43.645 12.23 32.033 0 29.458 L 0 26.396 C 12.307 23.456 24.134 12.764 26.542 0 L 29.604 0 C 31.697 12.437 43.799 23.733 56 26.396 L 56 29.458 C 44.024 31.94 31.624 43.591 29.604 56 Z"/></svg>
+      <a href="https://www.instagram.com/quadamin_/" target="_blank" rel="noopener noreferrer" class="social-link text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] hover:text-white hover:line-through transition-colors">Instagram</a>
+      <svg viewBox="0 0 56 56" class="w-14 h-14 shrink-0"><path fill="rgba(255,255,255,0.1)" d="M 26.542 56 C 24.387 43.645 12.23 32.033 0 29.458 L 0 26.396 C 12.307 23.456 24.134 12.764 26.542 0 L 29.604 0 C 31.697 12.437 43.799 23.733 56 26.396 L 56 29.458 C 44.024 31.94 31.624 43.591 29.604 56 Z"/></svg>
+    </div>
   </section>
 
   <script>
@@ -124,24 +408,24 @@
     toggle.addEventListener('click', () => {
       const isOn = toggle.getAttribute('aria-pressed') === 'true';
       toggle.setAttribute('aria-pressed', String(!isOn));
-      knob.style.transform = isOn ? 'translateX(0)' : 'translateX(41px)';
+      knob.style.transform = isOn ? 'translateX(0)' : 'translateX(42px)';
     });
 
-    const wrap = document.getElementById('hero-text-wrap');
-    const photoText = document.getElementById('photo-text');
-
-    wrap.addEventListener('mousemove', (e) => {
-      const rect = wrap.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      photoText.style.setProperty('--mx', `${x}px`);
-      photoText.style.setProperty('--my', `${y}px`);
+    document.querySelectorAll('.results-line-group').forEach((group) => {
+      group.addEventListener('mouseenter', () => group.classList.add('is-hovered'), { once: true });
     });
 
-    wrap.addEventListener('mouseleave', () => {
-      photoText.style.setProperty('--mx', '-9999px');
-      photoText.style.setProperty('--my', '-9999px');
+    // Hero photo drifts horizontally with the cursor (damped to 0.43x the
+    // offset from viewport center, measured directly off quadriaminu.com via
+    // dispatched real mouse events at clientX 200/1200) while staying pinned
+    // vertically at the seam between the two text lines.
+    const heroPhoto = document.querySelector('.hero-photo');
+    window.addEventListener('mousemove', (e) => {
+      const center = window.innerWidth / 2;
+      const offset = (e.clientX - center) * 0.43;
+      heroPhoto.style.setProperty('--photo-x', `${offset}px`);
     });
+
   </script>
 </body>
 </html>
