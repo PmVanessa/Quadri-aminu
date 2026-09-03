@@ -27,14 +27,22 @@
        screenshots on the "Ready to Drive Results" heading line: the dark
        line shrinks and the green accent grows and shifts toward the
        heading. It's a toggle -- retracts on mouseleave and re-triggers on
-       every hover, not a one-time permanent state. */
+       every hover, not a one-time permanent state.
+
+       Pure CSS :hover, not a JS classList toggle: this page loads Tailwind's
+       CDN "Play" script, which runs a MutationObserver that re-JIT-compiles
+       on every class-attribute change anywhere in the DOM. Toggling a class
+       on hover was making every single hover trigger a full rescan of this
+       page's markup (two marquees, timeline, footer), which is what caused
+       the stutter after the first hover. :hover mutates no attributes, so
+       it can't trip that observer. */
     .results-line-dark, .results-line-green {
       transition: transform 0.3s ease;
     }
-    .results-line-group.is-hovered .results-line-dark {
+    .results-line-group:hover .results-line-dark {
       transform: translate3d(-90px, 0px, 0px) scale(0.556206, 1);
     }
-    .results-line-group.is-hovered .results-line-green {
+    .results-line-group:hover .results-line-green {
       transform: translate3d(-70px, 0px, 0px) scale(2.5, 1);
     }
 
@@ -416,20 +424,23 @@
       knob.style.transform = isOn ? 'translateX(0)' : 'translateX(42px)';
     });
 
-    document.querySelectorAll('.results-line-group').forEach((group) => {
-      group.addEventListener('mouseenter', () => group.classList.add('is-hovered'));
-      group.addEventListener('mouseleave', () => group.classList.remove('is-hovered'));
-    });
-
     // Hero photo drifts horizontally with the cursor (damped to 0.43x the
     // offset from viewport center, measured directly off quadriaminu.com via
     // dispatched real mouse events at clientX 200/1200) while staying pinned
     // vertically at the seam between the two text lines.
     const heroPhoto = document.querySelector('.hero-photo');
+    let pendingPhotoX = 0;
+    let photoRafTicking = false;
     window.addEventListener('mousemove', (e) => {
       const center = window.innerWidth / 2;
-      const offset = (e.clientX - center) * 0.43;
-      heroPhoto.style.setProperty('--photo-x', `${offset}px`);
+      pendingPhotoX = (e.clientX - center) * 0.43;
+      if (!photoRafTicking) {
+        photoRafTicking = true;
+        requestAnimationFrame(() => {
+          heroPhoto.style.setProperty('--photo-x', `${pendingPhotoX}px`);
+          photoRafTicking = false;
+        });
+      }
     });
 
   </script>
