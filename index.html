@@ -57,12 +57,40 @@
        small green cap that overlaps the segment's right half and pokes
        ~3.89px past the row's right edge -- measured directly off the live
        site (getBoundingClientRect on "Dark Line"/"Middle Green Line"/"Top
-       Green Line" for each of the 5 non-interactive section headings:
-       ABOUT, Academic & Student Leadership, Tech & Professional Event
-       Support, Community & Youth Impact, Technical & Global Communities).
-       No hover interactivity on these (unlike "Ready to Drive Results"). */
+       Green Line" for each of the 5 section headings: ABOUT, Academic &
+       Student Leadership, Tech & Professional Event Support, Community &
+       Youth Impact, Technical & Global Communities).
+       These ARE hover-interactive, same mechanism as "Ready to Drive
+       Results": on hover the dark track shrinks (left edge fixed, right
+       edge retracts inward) while the green segment grows to 2.5x its
+       rest width and shifts left, leaving a visible gap between them; the
+       cap disappears entirely. Verified via real mouse hover +
+       getBoundingClientRect() on Technical & Global Communities (dark
+       track: left 685.453 unchanged, right 1184->1004; green: right
+       1184->1144, left 1144->1044). Using transform-origin instead of
+       Framer's translate3d avoids needing a matching translate for each
+       track width. Dark's scaleX ratio is track-width-dependent (this is
+       Technical & Global Communities's specific ratio); green's
+       translateX(-40px) scale(2.5,1) stems from green's rest width always
+       being 40px, matching the footer's scale(2.5,1) -- both plausibly
+       universal across sections but not yet confirmed for the other 4;
+       verify individually when each section is reached. */
     .section-line-cap {
       right: -3.89px;
+    }
+    .section-line-dark, .section-line-green {
+      transition: transform 0.3s ease;
+    }
+    .section-line-group.is-hovered .section-line-dark {
+      transform-origin: left;
+      transform: scaleX(0.638992);
+    }
+    .section-line-group.is-hovered .section-line-green {
+      transform-origin: right;
+      transform: translateX(-40px) scaleX(2.5);
+    }
+    .section-line-group.is-hovered .section-line-cap {
+      display: none;
     }
 
     .font-massive {
@@ -179,7 +207,7 @@
   </section>
 
   <!-- INTRODUCTION SECTION -->
-  <section class="flex flex-col items-center mt-24 md:mt-32 px-6 max-w-[850px] mx-auto pb-20">
+  <section class="flex flex-col items-center mt-24 md:mt-32 content-width pb-20">
     <div class="text-[#E0F11F] text-3xl mb-10">✦</div>
     <p class="text-[#D1D1D1] text-[22px] md:text-[28px] leading-[1.6] text-center font-medium">
       I'm Quadri Aminu, a Product & Delivery Leader blending product strategy,
@@ -189,7 +217,7 @@
   </section>
 
   <!-- ABOUT SECTION -->
-  <section class="flex flex-col mt-8 md:mt-16 px-6 max-w-[850px] mx-auto pb-24 gap-6">
+  <section class="flex flex-col mt-8 md:mt-16 content-width pb-24 gap-6">
     <div class="flex items-center gap-[40px]">
       <h2 class="text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] whitespace-nowrap" style="font-family:'Big Shoulders Display',sans-serif;">
         ABOUT
@@ -242,7 +270,7 @@
   </section>
 
   <!-- TIMELINE / LEADERSHIP SECTIONS -->
-  <section class="flex flex-col mt-20 px-6 max-w-[850px] mx-auto pb-24 gap-20">
+  <section class="flex flex-col mt-20 content-width pb-[108px] gap-20">
 
     <div>
       <div class="flex items-center gap-[40px] mb-8">
@@ -255,7 +283,7 @@
           <div class="section-line-cap absolute top-0 h-1 w-[20px] bg-[#E0F11F]"></div>
         </div>
       </div>
-      <div class="flex flex-col gap-10">
+      <div class="grid grid-cols-2 gap-x-[68px] gap-y-[64px]">
         <div>
           <h4 class="text-white text-[17px] md:text-[18px] font-semibold">Master of Science in Project Management</h4>
           <p class="text-white/40 text-[14px] mt-1">University of Sunderland in London</p>
@@ -282,7 +310,7 @@
           <div class="section-line-cap absolute top-0 h-1 w-[20px] bg-[#E0F11F]"></div>
         </div>
       </div>
-      <div class="flex flex-col gap-10">
+      <div class="grid grid-cols-2 gap-x-[68px] gap-y-[64px]">
         <div>
           <h4 class="text-white text-[17px] md:text-[18px] font-semibold">ProductCon (Product School Conference)</h4>
           <p class="text-white/40 text-[14px] mt-1">Volunteer, Program &amp; Operations Team</p>
@@ -312,7 +340,7 @@
           <div class="section-line-cap absolute top-0 h-1 w-[20px] bg-[#E0F11F]"></div>
         </div>
       </div>
-      <div class="flex flex-col gap-10">
+      <div class="grid grid-cols-2 gap-x-[68px] gap-y-[64px]">
         <div>
           <h4 class="text-white text-[17px] md:text-[18px] font-semibold">NYSC Council — August 8 Chapter</h4>
           <p class="text-white/40 text-[14px] mt-1">Lead, Educational Team</p>
@@ -327,26 +355,30 @@
     </div>
 
     <div>
-      <div class="flex items-center gap-[40px] mb-8">
+      <div class="section-line-group flex items-center gap-[40px] mb-16 cursor-pointer">
         <h3 class="text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] whitespace-nowrap" style="font-family:'Big Shoulders Display',sans-serif;">
           Technical &amp; Global Communities
         </h3>
         <div class="relative flex-1 h-1">
-          <div class="absolute inset-0 bg-[rgba(240,240,240,0.1)]"></div>
-          <div class="absolute right-0 top-0 h-1 w-[40px] bg-[#E0F11F]"></div>
+          <div class="section-line-dark absolute inset-0 bg-[rgba(240,240,240,0.1)]"></div>
+          <div class="section-line-green absolute right-0 top-0 h-1 w-[40px] bg-[#E0F11F]"></div>
           <div class="section-line-cap absolute top-0 h-1 w-[20px] bg-[#E0F11F]"></div>
         </div>
       </div>
-      <div class="flex flex-col gap-10">
-        <div>
-          <h4 class="text-white text-[17px] md:text-[18px] font-semibold">IEEE / AIESEC (Electronics &amp; Computer Engineering)</h4>
-          <p class="text-white/40 text-[14px] mt-1">Advisory Board Member (300 – 500 Level)</p>
-          <p class="text-white/60 text-[15px] leading-[1.6] mt-3">Provided guidance to leadership, contributed to strategic decisions, and supported student development.</p>
+      <div class="grid grid-cols-2 gap-x-[68px] gap-y-[64px]">
+        <div class="flex flex-col gap-6">
+          <div class="flex flex-col gap-2">
+            <h4 class="text-[#F0F0F0] text-[17px] md:text-[20px] font-semibold leading-[1.4]">IEEE / AIESEC (Electronics &amp; Computer Engineering)</h4>
+            <p class="text-[#F0F0F0]/50 text-[16px] font-medium leading-[1.7]">Advisory Board Member (300 – 500 Level)</p>
+          </div>
+          <p class="text-[#F0F0F0] text-[18px] leading-[1.7]">Provided guidance to leadership, contributed to strategic decisions, and supported student development.</p>
         </div>
-        <div>
-          <h4 class="text-white text-[17px] md:text-[18px] font-semibold">Google Student Ambassador</h4>
-          <p class="text-white/40 text-[14px] mt-1">Student Ambassador</p>
-          <p class="text-white/60 text-[15px] leading-[1.6] mt-3">Promoted Google products, delivered digital skills training to students, and represented Google at campus-level events.</p>
+        <div class="flex flex-col gap-6">
+          <div class="flex flex-col gap-2">
+            <h4 class="text-[#F0F0F0] text-[17px] md:text-[20px] font-semibold leading-[1.4]">Google Student Ambassador</h4>
+            <p class="text-[#F0F0F0]/50 text-[16px] font-medium leading-[1.7]">Student Ambassador</p>
+          </div>
+          <p class="text-[#F0F0F0] text-[18px] leading-[1.7]">Promoted Google products, delivered digital skills training to students, and represented Google at campus-level events.</p>
         </div>
       </div>
     </div>
@@ -485,7 +517,7 @@
       knob.style.transform = isOn ? 'translateX(0)' : 'translateX(42px)';
     });
 
-    document.querySelectorAll('.results-line-group').forEach((group) => {
+    document.querySelectorAll('.results-line-group, .section-line-group').forEach((group) => {
       group.addEventListener('mouseenter', () => group.classList.add('is-hovered'));
       group.addEventListener('mouseleave', () => group.classList.remove('is-hovered'));
     });
