@@ -35,6 +35,12 @@
     .results-line-group.is-hovered .results-line-green {
       transform: translate3d(-70px, 0px, 0px) scale(2.5, 1);
     }
+    /* Rest-state accent cap (the small green tip that pokes past the row's
+       right edge) -- live site removes it entirely via a Framer variant
+       swap while hovered, so it's hidden here instead of animated. */
+    .results-line-group.is-hovered .results-line-cap {
+      display: none;
+    }
 
     /* Tailwind CDN's JIT parser was mangling the nested min()+calc() in
        w-[min(928px,calc(100%-50px))], generating invalid CSS (the inner
@@ -45,6 +51,18 @@
       max-width: 928px;
       margin-left: auto;
       margin-right: auto;
+    }
+
+    /* Section heading line: dark track + green segment flush right + a
+       small green cap that overlaps the segment's right half and pokes
+       ~3.89px past the row's right edge -- measured directly off the live
+       site (getBoundingClientRect on "Dark Line"/"Middle Green Line"/"Top
+       Green Line" for each of the 5 non-interactive section headings:
+       ABOUT, Academic & Student Leadership, Tech & Professional Event
+       Support, Community & Youth Impact, Technical & Global Communities).
+       No hover interactivity on these (unlike "Ready to Drive Results"). */
+    .section-line-cap {
+      right: -3.89px;
     }
 
     .font-massive {
@@ -172,7 +190,16 @@
 
   <!-- ABOUT SECTION -->
   <section class="flex flex-col mt-8 md:mt-16 px-6 max-w-[850px] mx-auto pb-24 gap-6">
-    <p class="text-[#7A7A7A] uppercase tracking-[0.25em] text-[11px] md:text-[13px] font-medium">ABOUT</p>
+    <div class="flex items-center gap-[40px]">
+      <h2 class="text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] whitespace-nowrap" style="font-family:'Big Shoulders Display',sans-serif;">
+        ABOUT
+      </h2>
+      <div class="relative flex-1 h-1">
+        <div class="absolute inset-0 bg-[rgba(240,240,240,0.1)]"></div>
+        <div class="absolute right-0 top-0 h-1 w-[40px] bg-[#E0F11F]"></div>
+        <div class="section-line-cap absolute top-0 h-1 w-[20px] bg-[#E0F11F]"></div>
+      </div>
+    </div>
 
     <p class="text-[#F0F0F0]/50 text-[16px] md:text-[18px] leading-[1.7]">
       With a passion for solving complex business challenges, I bring a hybrid approach that blends data-driven strategy, digital innovation, and people-focused change.
@@ -218,9 +245,16 @@
   <section class="flex flex-col mt-20 px-6 max-w-[850px] mx-auto pb-24 gap-20">
 
     <div>
-      <h3 class="uppercase text-[#E0F11F] text-[26px] md:text-[34px] font-black mb-8" style="font-family:'Big Shoulders Display',sans-serif;">
-        Academic &amp; Student Leadership <span class="text-white/40 text-[13px] normal-case font-normal tracking-normal">(Undergraduate &amp; Postgraduate)</span>
-      </h3>
+      <div class="flex items-center gap-[40px] mb-8">
+        <h3 class="text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] whitespace-nowrap" style="font-family:'Big Shoulders Display',sans-serif;">
+          Academic &amp; Student Leadership <span class="text-white/40 text-[13px] font-normal tracking-normal">(Undergraduate &amp; Postgraduate)</span>
+        </h3>
+        <div class="relative flex-1 h-1">
+          <div class="absolute inset-0 bg-[rgba(240,240,240,0.1)]"></div>
+          <div class="absolute right-0 top-0 h-1 w-[40px] bg-[#E0F11F]"></div>
+          <div class="section-line-cap absolute top-0 h-1 w-[20px] bg-[#E0F11F]"></div>
+        </div>
+      </div>
       <div class="flex flex-col gap-10">
         <div>
           <h4 class="text-white text-[17px] md:text-[18px] font-semibold">Master of Science in Project Management</h4>
@@ -238,9 +272,16 @@
     </div>
 
     <div>
-      <h3 class="uppercase text-[#E0F11F] text-[26px] md:text-[34px] font-black mb-8" style="font-family:'Big Shoulders Display',sans-serif;">
-        Tech &amp; Professional Event Support
-      </h3>
+      <div class="flex items-center gap-[40px] mb-8">
+        <h3 class="text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] whitespace-nowrap" style="font-family:'Big Shoulders Display',sans-serif;">
+          Tech &amp; Professional Event Support
+        </h3>
+        <div class="relative flex-1 h-1">
+          <div class="absolute inset-0 bg-[rgba(240,240,240,0.1)]"></div>
+          <div class="absolute right-0 top-0 h-1 w-[40px] bg-[#E0F11F]"></div>
+          <div class="section-line-cap absolute top-0 h-1 w-[20px] bg-[#E0F11F]"></div>
+        </div>
+      </div>
       <div class="flex flex-col gap-10">
         <div>
           <h4 class="text-white text-[17px] md:text-[18px] font-semibold">ProductCon (Product School Conference)</h4>
@@ -261,9 +302,16 @@
     </div>
 
     <div>
-      <h3 class="uppercase text-[#E0F11F] text-[26px] md:text-[34px] font-black mb-8" style="font-family:'Big Shoulders Display',sans-serif;">
-        Community &amp; Youth Impact
-      </h3>
+      <div class="flex items-center gap-[40px] mb-8">
+        <h3 class="text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] whitespace-nowrap" style="font-family:'Big Shoulders Display',sans-serif;">
+          Community &amp; Youth Impact
+        </h3>
+        <div class="relative flex-1 h-1">
+          <div class="absolute inset-0 bg-[rgba(240,240,240,0.1)]"></div>
+          <div class="absolute right-0 top-0 h-1 w-[40px] bg-[#E0F11F]"></div>
+          <div class="section-line-cap absolute top-0 h-1 w-[20px] bg-[#E0F11F]"></div>
+        </div>
+      </div>
       <div class="flex flex-col gap-10">
         <div>
           <h4 class="text-white text-[17px] md:text-[18px] font-semibold">NYSC Council — August 8 Chapter</h4>
@@ -279,9 +327,16 @@
     </div>
 
     <div>
-      <h3 class="uppercase text-[#E0F11F] text-[26px] md:text-[34px] font-black mb-8" style="font-family:'Big Shoulders Display',sans-serif;">
-        Technical &amp; Global Communities
-      </h3>
+      <div class="flex items-center gap-[40px] mb-8">
+        <h3 class="text-[#E0F11F] text-[32px] font-bold tracking-[1.28px] whitespace-nowrap" style="font-family:'Big Shoulders Display',sans-serif;">
+          Technical &amp; Global Communities
+        </h3>
+        <div class="relative flex-1 h-1">
+          <div class="absolute inset-0 bg-[rgba(240,240,240,0.1)]"></div>
+          <div class="absolute right-0 top-0 h-1 w-[40px] bg-[#E0F11F]"></div>
+          <div class="section-line-cap absolute top-0 h-1 w-[20px] bg-[#E0F11F]"></div>
+        </div>
+      </div>
       <div class="flex flex-col gap-10">
         <div>
           <h4 class="text-white text-[17px] md:text-[18px] font-semibold">IEEE / AIESEC (Electronics &amp; Computer Engineering)</h4>
@@ -325,6 +380,7 @@
       <div class="relative flex-1 h-1">
         <div class="results-line-dark absolute inset-0 bg-[rgba(240,240,240,0.1)]"></div>
         <div class="results-line-green absolute right-0 top-0 h-1 w-[40px] bg-[#E0F11F]"></div>
+        <div class="results-line-cap section-line-cap absolute top-0 h-1 w-[20px] bg-[#E0F11F]"></div>
       </div>
     </div>
 
