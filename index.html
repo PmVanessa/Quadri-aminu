@@ -298,6 +298,14 @@
 
   </section>
 
+  <!-- FOOTER CTA + MARQUEE wrapper: position:sticky's containing block is the
+       nearest block-level ancestor. Without this wrapper, both sections were
+       bare siblings of <body>, so the marquee's "sticky bottom-0" was scoped
+       to the whole document -- it stayed pinned to the viewport bottom across
+       the ENTIRE page scroll (peeking behind unrelated sections like the
+       communities list), instead of only near the footer. Wrapping just
+       these two sections scopes the sticky range to their combined height. -->
+  <div class="relative">
   <!-- FOOTER CTA -->
   <!-- The MARQUEE is the one that stays fixed in place (sticky to viewport
        bottom, see its section below) -- this form section is normal scrolling
@@ -407,6 +415,7 @@
       <svg viewBox="0 0 56 56" class="w-14 h-14 shrink-0"><path fill="rgba(255,255,255,0.1)" d="M 26.542 56 C 24.387 43.645 12.23 32.033 0 29.458 L 0 26.396 C 12.307 23.456 24.134 12.764 26.542 0 L 29.604 0 C 31.697 12.437 43.799 23.733 56 26.396 L 56 29.458 C 44.024 31.94 31.624 43.591 29.604 56 Z"/></svg>
     </div>
   </section>
+  </div>
 
   <script>
     // Cosmetic only, the site always stays in dark mode. This just lets
