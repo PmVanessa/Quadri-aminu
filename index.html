@@ -23,12 +23,9 @@
     }
     ::selection { background-color: #E0F11F; color: black; }
 
-    /* Measured directly off quadriaminu.com via real hover + pixel-matched
-       screenshots on the "Ready to Drive Results" heading line: the dark
-       line shrinks and the green accent grows and shifts toward the
-       heading. It's a one-time trigger on first hover, not a toggle --
-       confirmed it stays in the triggered state well after the cursor
-       moves away (no mouseleave revert). */
+    /* Hover on the "Ready to Drive Results" heading line: the dark line
+       shrinks and the green accent grows and shifts toward the heading.
+       Toggles on mouseenter/mouseleave and is repeatably re-triggerable. */
     .results-line-dark, .results-line-green {
       transition: transform 0.3s ease;
     }
@@ -424,7 +421,8 @@
     });
 
     document.querySelectorAll('.results-line-group').forEach((group) => {
-      group.addEventListener('mouseenter', () => group.classList.add('is-hovered'), { once: true });
+      group.addEventListener('mouseenter', () => group.classList.add('is-hovered'));
+      group.addEventListener('mouseleave', () => group.classList.remove('is-hovered'));
     });
 
     // Hero photo drifts horizontally with the cursor (damped to 0.43x the
