@@ -25,12 +25,19 @@
 
     /* Hover on the "Ready to Drive Results" heading line: the dark line
        shrinks and the green accent grows and shifts toward the heading.
-       Toggles on mouseenter/mouseleave and is repeatably re-triggerable. */
+       Toggles on mouseenter/mouseleave and is repeatably re-triggerable.
+       Dark line's left edge must stay fixed (verified via heading-anchored
+       screenshot comparison against live -- the old translate3d+scale used
+       an implicit center transform-origin, which incorrectly shrank the
+       left edge inward too). transform-origin:left keeps left fixed and
+       only retracts the right edge, matching the ~180px right-edge
+       retraction confirmed on Technical & Global Communities's own line. */
     .results-line-dark, .results-line-green {
       transition: transform 0.3s ease;
     }
     .results-line-group.is-hovered .results-line-dark {
-      transform: translate3d(-90px, 0px, 0px) scale(0.556206, 1);
+      transform-origin: left;
+      transform: scaleX(0.697630);
     }
     .results-line-group.is-hovered .results-line-green {
       transform: translate3d(-70px, 0px, 0px) scale(2.5, 1);
