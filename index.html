@@ -31,12 +31,19 @@
        an implicit center transform-origin, which incorrectly shrank the
        left edge inward too). transform-origin:left keeps left fixed and
        only retracts the right edge, matching the ~180px right-edge
-       retraction confirmed on Technical & Global Communities's own line. */
+       retraction confirmed on Technical & Global Communities's own line.
+       transform-origin is set on the BASE rule (not just .is-hovered) --
+       transform-origin isn't itself transitioned, so if it only existed on
+       the hover rule it would snap from left back to the default center
+       the instant .is-hovered is removed, making the return-to-rest
+       animation jump/re-shrink from the wrong origin before growing back. */
+    .results-line-dark {
+      transform-origin: left;
+    }
     .results-line-dark, .results-line-green {
       transition: transform 0.3s ease;
     }
     .results-line-group.is-hovered .results-line-dark {
-      transform-origin: left;
       transform: scaleX(0.697630);
     }
     .results-line-group.is-hovered .results-line-green {
@@ -85,15 +92,19 @@
     .section-line-cap {
       right: -3.89px;
     }
+    .section-line-dark {
+      transform-origin: left;
+    }
+    .section-line-green {
+      transform-origin: right;
+    }
     .section-line-dark, .section-line-green {
       transition: transform 0.3s ease;
     }
     .section-line-group.is-hovered .section-line-dark {
-      transform-origin: left;
       transform: scaleX(0.638992);
     }
     .section-line-group.is-hovered .section-line-green {
-      transform-origin: right;
       transform: translateX(-40px) scaleX(2.5);
     }
     .section-line-group.is-hovered .section-line-cap {
